@@ -6,24 +6,90 @@ export default function DaftarLaporan({ laporan, onDelete, onUpdateStatus }) {
   
   const getStatusInfo = (status) => {
     if (status === 'Selesai') {
-      return { icon: <CheckCircle size={18} className="text-green-500" />, color: "text-green-700" };
+      return { icon: <CheckCircle size={18} className="text-green-500" />, color: "text-green-700", label: "Selesai" };
     }
     if (status === 'Proses') {
-      return { icon: <Loader size={18} className="text-blue-500 animate-spin" />, color: "text-blue-700" };
+      return { icon: <Loader size={18} className="text-blue-500 animate-spin" />, color: "text-blue-700", label: "Proses" };
     }
-    return { icon: <Clock size={18} className="text-orange-500" />, color: "text-orange-700" };
+    return { icon: <Clock size={18} className="text-orange-500" />, color: "text-orange-700", label: "Pending" };
   };
 
   return (
-    // --- PERUBAHAN DI SINI ---
-    // Kurangi padding di HP (p-4), tetap p-8 di desktop
-    <div className="bg-white rounded-xl shadow-xl p-4 md:p-8"> 
-    {/* ----------------------- */}
-
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Daftar Laporan Masuk</h2>
+    <div className=""> 
+      <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-6">Daftar Laporan Masuk</h2>
       
-      {/* Kode ini sudah responsif (scroll horizontal) */}
-      <div className="overflow-x-auto rounded-lg shadow-md border border-gray-200">
+      {/* --- TAMPILAN MOBILE (KARTU) --- */}
+      <div className="space-y-4 md:hidden">
+        {laporan.length === 0 && (
+          <div className="bg-white rounded-xl shadow-lg p-6 text-center text-gray-500 border border-gray-200">
+            Belum ada laporan yang masuk.
+          </div>
+        )}
+        {laporan.map(item => {
+          const statusInfo = getStatusInfo(item.status);
+          return (
+            <div key={item.id} className="bg-white rounded-xl shadow-lg border border-gray-200">
+              {/* Bagian Atas Kartu (Isi Laporan) */}
+              <div className="p-4">
+                {/* Status */}
+                <span className={`inline-flex items-center space-x-2 text-sm font-medium ${statusInfo.color} mb-3`}>
+                  {statusInfo.icon}
+                  <span>{statusInfo.label}</span>
+                </span>
+                
+                {/* Judul & Deskripsi */}
+                <h3 className="text-base font-semibold text-gray-900">{item.judul}</h3>
+                <p className="text-sm text-gray-600 mb-2">{item.deskripsi}</p>
+                
+                {/* Info Tambahan */}
+                <div className="text-sm text-gray-500 space-y-1">
+                  <p>
+                    <span className="font-medium text-gray-600">Pelapor:</span> {item.nama}
+                  </p>
+                  <p>
+                    <span className="font-medium text-gray-600">Kategori:</span> {item.kategori}
+                  </p>
+                  {item.telepon && (
+                     <p className="flex items-center space-x-1">
+                      <Phone size={14} />
+                      <span>{item.telepon}</span>
+                    </p>
+                  )}
+                </div>
+              </div>
+              
+              {/* Bagian Bawah Kartu (Tombol Aksi) */}
+              <div className="flex items-center justify-end space-x-2 p-3 bg-gray-50 rounded-b-xl border-t">
+                {item.status === 'Pending' && (
+                  <button 
+                    onClick={() => onUpdateStatus(item.id, 'Proses')}
+                    className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 text-sm font-semibold"
+                  >
+                    Proses
+                  </button>
+                )}
+                {item.status === 'Proses' && (
+                  <button 
+                    onClick={() => onUpdateStatus(item.id, 'Selesai')}
+                    className="px-3 py-1.5 bg-green-100 text-green-700 rounded-md hover:bg-green-200 text-sm font-semibold"
+                  >
+                    Selesai
+                  </button>
+                )}
+                <button 
+                  onClick={() => onDelete(item.id)} 
+                  className="px-3 py-1.5 bg-red-100 text-red-700 rounded-md hover:bg-red-200 text-sm font-semibold"
+                >
+                  Hapus
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* --- TAMPILAN DESKTOP (TABEL) --- */}
+      <div className="hidden md:block overflow-x-auto rounded-xl shadow-lg bg-white border border-gray-200">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
@@ -49,7 +115,7 @@ export default function DaftarLaporan({ laporan, onDelete, onUpdateStatus }) {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`flex items-center space-x-2 text-sm font-medium ${statusInfo.color}`}>
                       {statusInfo.icon}
-                      <span>{item.status}</span>
+                      <span>{statusInfo.label}</span>
                     </span>
                   </td>
                   
@@ -65,30 +131,31 @@ export default function DaftarLaporan({ laporan, onDelete, onUpdateStatus }) {
 
                   <td className="px-6 py-4">
                     <div className="text-sm font-semibold text-gray-900">{item.judul}</div>
-                    <div className="text-sm text-gray-600">{item.deskripsi}</div>
+                    <div className="text-sm text-gray-600 truncate max-w-xs">{item.deskripsi}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.kategori}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                     {item.status === 'Pending' && (
                       <button 
                         onClick={() => onUpdateStatus(item.id, 'Proses')}
-                        className="text-blue-600 hover:text-blue-900" title="Proses Laporan">
-                        <Loader size={20} />
+                        className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 text-sm font-semibold"
+                      >
+                        Proses
                       </button>
                     )}
                     {item.status === 'Proses' && (
                       <button 
                         onClick={() => onUpdateStatus(item.id, 'Selesai')}
-                        className="text-green-600 hover:text-green-900" title="Selesaikan Laporan">
-                        <Check size={20} />
+                        className="px-3 py-1.5 bg-green-100 text-green-700 rounded-md hover:bg-green-200 text-sm font-semibold"
+                      >
+                        Selesai
                       </button>
                     )}
                     <button 
                       onClick={() => onDelete(item.id)} 
-                      className="text-red-600 hover:text-red-900"
-                      title="Hapus Laporan"
+                      className="px-3 py-1.5 bg-red-100 text-red-700 rounded-md hover:bg-red-200 text-sm font-semibold"
                     >
-                      <Trash2 size={20} />
+                      Hapus
                     </button>
                   </td>
                 </tr>

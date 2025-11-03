@@ -4,7 +4,7 @@ import { Download } from 'lucide-react';
 import { kategoriOptions } from '../data/appData';
 
 export default function TransparansiPage({ laporan = [] }) {
-  // ... (kode pemrosesan data dinamis tidak berubah) ...
+  // ... (kode pemrosesan data tidak berubah) ...
   const downloadReport = () => {
     alert('Laporan transparansi sedang diunduh...');
   };
@@ -40,36 +40,27 @@ export default function TransparansiPage({ laporan = [] }) {
 
   return (
     <div className="space-y-6">
-      {/* Ubah padding di HP */}
-      <div className="bg-white rounded-xl shadow-lg p-4 md:p-6">
+      <div className="rounded-xl">
         
-        {/* --- PERUBAHAN DI SINI --- */}
-        {/* Judul dan Tombol kita buat 'stack' (menumpuk) di HP */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0">
-        {/* ------------------------- */}
-
-          <h2 className="text-2xl font-bold text-gray-800 text-center md:text-left">Transparansi Laporan Warga</h2>
+          {/* --- PERUBAHAN: Kecilkan font di HP --- */}
+          <h2 className="text-lg md:text-2xl font-bold text-gray-800 text-center md:text-left">Transparansi Laporan Warga</h2>
           <button 
             onClick={downloadReport}
-            // Buat tombol 'full width' di HP
-            className="flex items-center justify-center space-x-2 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors w-full md:w-auto"
+            className="flex items-center justify-center space-x-2 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors w-full md:w-auto shadow-md hover:shadow-lg"
           >
             <Download size={20} />
             <span>Download Laporan</span>
           </button>
         </div>
 
-        {/* --- PERUBAHAN DI SINI --- */}
-        {/* 'grid-cols-1': HP (1 kolom)
-          'sm:grid-cols-2': HP landscape/Tablet kecil (2 kolom)
-          'lg:grid-cols-5': Desktop (5 kolom)
-        */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-        {/* ------------------------- */}
+        {/* --- PERUBAHAN: 2 kolom di HP (grid-cols-2) --- */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
           {processedLaporanData.map(item => (
-            <div key={item.kategori} className="bg-gradient-to-br from-green-50 to-blue-50 p-4 rounded-lg border border-gray-200 shadow-md">
+            <div key={item.kategori} className="bg-white p-3 md:p-4 rounded-lg border border-gray-200 shadow-lg">
+              {/* --- PERUBAHAN: Kecilkan font di HP --- */}
               <h4 className="font-semibold text-gray-800 text-sm mb-2">{item.kategori}</h4>
-              <p className="text-2xl font-bold text-green-600">{item.total}</p>
+              <p className="text-xl font-bold text-green-600">{item.total}</p>
               <div className="text-xs text-gray-600 mt-2 space-y-1">
                 <div className="flex justify-between">
                   <span>Selesai:</span>
@@ -88,10 +79,10 @@ export default function TransparansiPage({ laporan = [] }) {
           ))}
         </div>
 
-        {/* Ubah padding di HP */}
-        <div className="bg-gray-50 p-4 md:p-6 rounded-lg shadow-md border border-gray-200">
-          <h3 className="font-bold text-gray-800 mb-4">Grafik Status Laporan</h3>
+        <div className="bg-white p-4 md:p-6 rounded-lg shadow-lg border border-gray-200">
+          <h3 className="font-bold text-gray-800 text-base md:text-lg mb-4">Grafik Status Laporan</h3>
           <div className="space-y-4">
+            {/* ... (kode grafik tidak berubah) ... */}
             {processedLaporanData.map(item => {
               if (item.total === 0) return null; 
 
@@ -130,7 +121,7 @@ export default function TransparansiPage({ laporan = [] }) {
             })}
           </div>
           
-          <div className="flex justify-center space-x-6 mt-6">
+          <div className="flex flex-col items-center sm:flex-row sm:justify-center sm:space-x-6 mt-6 space-y-2 sm:space-y-0">
             <div className="flex items-center space-x-2">
               <div className="w-4 h-4 bg-green-500 rounded"></div>
               <span className="text-sm text-gray-700">Selesai</span>
@@ -147,29 +138,23 @@ export default function TransparansiPage({ laporan = [] }) {
         </div>
       </div>
 
-      {/* Ubah padding di HP */}
       <div className="bg-white rounded-xl shadow-lg p-4 md:p-6">
-        <h3 className="text-xl font-bold text-gray-800 mb-4">Statistik Bulanan (Total: {totalLaporan})</h3>
+        <h3 className="text-base md:text-xl font-bold text-gray-800 mb-4">Statistik Bulanan (Total: {totalLaporan})</h3>
         
-        {/* --- PERUBAHAN DI SINI --- */}
-        {/* 'grid-cols-1': HP (1 kolom)
-          'md:grid-cols-3': Desktop (3 kolom)
-        */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* ------------------------- */}
-          <div className="text-center p-6 bg-green-50 rounded-lg shadow-md">
-            <p className="text-4xl font-bold text-green-600 mb-2">{totalSelesai}</p>
-            <p className="text-gray-700 font-medium">Laporan Selesai</p>
+          <div className="text-center p-4 md:p-6 bg-green-50 rounded-lg shadow-md">
+            <p className="text-2xl md:text-3xl font-bold text-green-600 mb-2">{totalSelesai}</p>
+            <p className="text-sm md:text-base text-gray-700 font-medium">Laporan Selesai</p>
             <p className="text-sm text-gray-500 mt-1">{getPercentage(totalSelesai)}% dari total</p>
           </div>
-          <div className="text-center p-6 bg-blue-50 rounded-lg shadow-md">
-            <p className="text-4xl font-bold text-blue-600 mb-2">{totalProses}</p>
-            <p className="text-gray-700 font-medium">Sedang Diproses</p>
+          <div className="text-center p-4 md:p-6 bg-blue-50 rounded-lg shadow-md">
+            <p className="text-2xl md:text-3xl font-bold text-blue-600 mb-2">{totalProses}</p>
+            <p className="text-sm md:text-base text-gray-700 font-medium">Sedang Diproses</p>
             <p className="text-sm text-gray-500 mt-1">{getPercentage(totalProses)}% dari total</p>
           </div>
-          <div className="text-center p-6 bg-orange-50 rounded-lg shadow-md">
-            <p className="text-4xl font-bold text-orange-600 mb-2">{totalPending}</p>
-            <p className="text-gray-700 font-medium">Menunggu</p>
+          <div className="text-center p-4 md:p-6 bg-orange-50 rounded-lg shadow-md">
+            <p className="text-2xl md:text-3xl font-bold text-orange-600 mb-2">{totalPending}</p>
+            <p className="text-sm md:text-base text-gray-700 font-medium">Menunggu</p>
             <p className="text-sm text-gray-500 mt-1">{getPercentage(totalPending)}% dari total</p>
           </div>
         </div>

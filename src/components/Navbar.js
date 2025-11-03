@@ -11,9 +11,11 @@ const navItems = [
 export default function Navbar({ currentPage, setCurrentPage }) {
   return (
     <nav className="bg-white shadow-md sticky top-[68px] z-30"> 
-    {/* ^ Ubah top-[76px] -> top-[68px] (karena header lebih pendek di HP) */}
-
-      <div className="container mx-auto px-2 py-3 flex justify-start md:justify-center overflow-x-auto space-x-2">
+      
+      {/* --- PERUBAHAN RESPONSIVE --- */}
+      {/* Hapus 'overflow-x-auto', 'space-x-2', 'justify-start' */}
+      {/* Tambah 'justify-center', 'flex-wrap', 'gap-2' */}
+      <div className="container mx-auto px-2 py-3 flex justify-center flex-wrap gap-2">
         
         {navItems.map(nav => {
           const isActive = currentPage === nav.id;
@@ -24,14 +26,12 @@ export default function Navbar({ currentPage, setCurrentPage }) {
               onClick={() => setCurrentPage(nav.id)}
               
               className={`
-                {/* --- PERUBAHAN DI SINI --- */}
-                flex items-center space-x-2 px-3 md:px-6 py-3 {/* Ubah px-4 -> px-3 */}
-                {/* ------------------------- */}
+                flex items-center space-x-2 px-3 md:px-6 py-3
                 font-medium rounded-lg
                 transition-all duration-200 ease-in-out
                 flex-shrink-0 whitespace-nowrap
                 ${isActive 
-                  ? 'bg-green-600 text-white shadow-lg transform -translate-y-1' 
+                  ? 'bg-green-600 text-white shadow-lg' 
                   : 'bg-white text-gray-700 shadow-md hover:shadow-lg hover:-translate-y-1 hover:text-green-600'
                 }
               `}

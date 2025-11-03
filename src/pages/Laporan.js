@@ -4,7 +4,6 @@ import { Send, Camera, Video, Upload, X } from 'lucide-react';
 import { kategoriOptions } from '../data/appData';
 
 export default function LaporanPage({ setCurrentPage, onAddLaporan }) {
-  // ... (state dan fungsi-fungsi tidak berubah) ...
   const [formData, setFormData] = useState({
     nama: '',
     telepon: '',
@@ -43,25 +42,18 @@ export default function LaporanPage({ setCurrentPage, onAddLaporan }) {
 
   return (
     <div className="max-w-3xl mx-auto">
-      {/* --- PERUBAHAN DI SINI --- */}
-      {/* Kurangi padding di HP (p-4), tetap p-8 di desktop */}
       <div className="bg-white rounded-xl shadow-xl p-4 md:p-8">
-      {/* ------------------------- */}
 
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">Buat Laporan Baru</h2>
+        {/* --- PERUBAHAN: Kecilkan font di HP --- */}
+        <h2 className="text-lg md:text-2xl font-bold text-gray-800 mb-6">Buat Laporan Baru</h2>
         
         <div className="space-y-6">
 
           <div className="border-b pb-6 border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Identitas Pelapor</h3>
+            {/* --- PERUBAHAN: Kecilkan font di HP --- */}
+            <h3 className="text-base md:text-lg font-semibold text-gray-800 mb-4">Identitas Pelapor</h3>
             
-            {/* --- PERUBAHAN DI SINI --- */}
-            {/* 'grid-cols-1': HP (1 kolom)
-              'md:grid-cols-2': Desktop (2 kolom)
-            */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* ------------------------- */}
-
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Nama Lengkap <span className="text-red-500">*</span>
@@ -71,7 +63,7 @@ export default function LaporanPage({ setCurrentPage, onAddLaporan }) {
                   name="nama"
                   value={formData.nama}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full px-4 py-2.5 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   placeholder="Masukkan nama lengkap Anda"
                 />
               </div>
@@ -84,7 +76,7 @@ export default function LaporanPage({ setCurrentPage, onAddLaporan }) {
                   name="telepon"
                   value={formData.telepon}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full px-4 py-2.5 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   placeholder="Untuk umpan balik"
                 />
               </div>
@@ -94,7 +86,6 @@ export default function LaporanPage({ setCurrentPage, onAddLaporan }) {
             </p>
           </div>
           
-          {/* ... (sisa formulir: Kategori, Judul, Deskripsi) ... */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Kategori Permasalahan <span className="text-red-500">*</span>
@@ -103,7 +94,7 @@ export default function LaporanPage({ setCurrentPage, onAddLaporan }) {
               name="kategori"
               value={formData.kategori}
               onChange={handleChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="w-full px-4 py-2.5 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
             >
               <option value="">Pilih Kategori</option>
               {kategoriOptions.map(kat => (
@@ -121,7 +112,7 @@ export default function LaporanPage({ setCurrentPage, onAddLaporan }) {
               name="judul"
               value={formData.judul}
               onChange={handleChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="w-full px-4 py-2.5 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               placeholder="Contoh: Jalan Rusak di RT 02"
             />
           </div>
@@ -134,8 +125,8 @@ export default function LaporanPage({ setCurrentPage, onAddLaporan }) {
               name="deskripsi"
               value={formData.deskripsi}
               onChange={handleChange}
-              rows="6"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              rows="4"
+              className="w-full px-4 py-2.5 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               placeholder="Jelaskan permasalahan secara detail..."
             ></textarea>
           </div>
@@ -144,8 +135,8 @@ export default function LaporanPage({ setCurrentPage, onAddLaporan }) {
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Lampiran Dokumen/Bukti
             </label>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-green-500 transition-colors">
-              <Upload className="mx-auto text-gray-400 mb-2" size={40} />
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 md:p-6 text-center hover:border-green-500 transition-colors">
+              <Upload className="mx-auto text-gray-400 mb-2" size={32} />
               <p className="text-sm text-gray-600 mb-2">Upload foto, video, atau dokumen pendukung</p>
               <p className="text-xs text-gray-400 mb-4">Format: JPG, PNG, MP4, PDF (Max 10MB)</p>
               <input 
@@ -158,7 +149,7 @@ export default function LaporanPage({ setCurrentPage, onAddLaporan }) {
               />
               <label 
                 htmlFor="file-upload"
-                className="inline-block bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 cursor-pointer transition-colors"
+                className="inline-block bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 cursor-pointer transition-colors text-sm"
               >
                 Pilih File
               </label>
@@ -168,8 +159,8 @@ export default function LaporanPage({ setCurrentPage, onAddLaporan }) {
               <div className="mt-4 space-y-2">
                 {formData.files.map((file, index) => (
                   <div key={index} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      {file.type.startsWith('image/') ? <Camera size={20} className="text-blue-500" /> : <Video size={20} className="text-purple-500" />}
+                    <div className="flex items-center space-x-3 min-w-0">
+                      {file.type.startsWith('image/') ? <Camera size={20} className="text-blue-500 flex-shrink-0" /> : <Video size={20} className="text-purple-500 flex-shrink-0" />}
                       <span className="text-sm text-gray-700 truncate">{file.name}</span>
                     </div>
                     <button 
@@ -184,23 +175,17 @@ export default function LaporanPage({ setCurrentPage, onAddLaporan }) {
             )}
           </div>
           
-          {/* --- PERUBAHAN DI SINI (TOMBOL) --- */}
-          {/* 'flex-col': Stack tombol di HP
-            'sm:flex-row': Tombol berdampingan di layar lebih besar
-          */}
           <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-          {/* --------------------------------- */}
             <button 
               onClick={handleSubmit}
-              className="flex-1 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors font-semibold flex items-center justify-center space-x-2"
+              className="flex-1 bg-green-600 text-white py-2.5 md:py-3 rounded-lg hover:bg-green-700 transition-colors font-semibold flex items-center justify-center space-x-2"
             >
               <Send size={20} />
               <span>Kirim Laporan</span>
             </button>
             <button 
               onClick={() => setCurrentPage('home')}
-              // Buat 'w-full' di HP dan 'w-auto' di desktop
-              className="w-full sm:w-auto px-6 bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition-colors font-semibold"
+              className="w-full sm:w-auto px-6 bg-gray-200 text-gray-700 py-2.5 md:py-3 rounded-lg hover:bg-gray-300 transition-colors font-semibold"
             >
               Batal
             </button>
