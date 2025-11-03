@@ -1,4 +1,4 @@
-// src/pages/Laporan.js - Simple & Clean Version
+// src/pages/Laporan.js
 import React, { useState } from 'react';
 import { Send, Camera, Video, Upload, X } from 'lucide-react';
 import { kategoriOptions } from '../data/appData';
@@ -14,16 +14,19 @@ export default function LaporanPage({ setCurrentPage, onAddLaporan }) {
   });
 
   const handleFileUpload = (e) => {
+    // ... (kode tidak berubah)
     const files = Array.from(e.target.files);
     setFormData({...formData, files: [...formData.files, ...files]});
   };
 
   const removeFile = (index) => {
+    // ... (kode tidak berubah)
     const newFiles = formData.files.filter((_, i) => i !== index);
     setFormData({...formData, files: newFiles});
   };
   
   const handleChange = (e) => {
+    // ... (kode tidak berubah)
     const { name, value } = e.target;
     setFormData(prevState => ({
       ...prevState,
@@ -33,116 +36,123 @@ export default function LaporanPage({ setCurrentPage, onAddLaporan }) {
 
   const handleSubmit = () => {
     if (formData.kategori && formData.judul && formData.deskripsi && formData.nama) {
+      // 1. Panggil fungsi onAddLaporan dari App.js
       onAddLaporan(formData); 
-      setFormData({ nama: '', telepon: '', kategori: '', judul: '', deskripsi: '', files: [] });
-      setCurrentPage('home');
+      
+      // 2. Reset form
+      setFormData({ 
+        nama: '', telepon: '', 
+        kategori: '', judul: '', deskripsi: '', files: [] 
+      });
+
+      // 3. Pindah ke halaman sukses (BUKAN 'home' dan HAPUS alert)
+      setCurrentPage('laporan_sukses'); 
+      
     } else {
       alert('Mohon lengkapi Nama, Kategori, Judul, dan Deskripsi!');
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-6 bg-gray-100 min-h-screen">
+    // ... (Seluruh JSX formulir Anda tidak perlu diubah) ...
+    <div className="max-w-3xl mx-auto">
       <div className="bg-white rounded-xl shadow-lg p-8">
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-800 mb-1">Buat Laporan Baru</h2>
-          <p className="text-gray-600 text-sm">Sampaikan aspirasi Anda dengan jelas dan lengkap</p>
-        </div>
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">Buat Laporan Baru</h2>
         
         <div className="space-y-6">
-          {/* Identitas Pelapor */}
-          <div className="pb-6 border-b border-gray-200">
-            <h3 className="text-base font-semibold text-gray-800 mb-4">1. Identitas Pelapor</h3>
-            <div className="grid md:grid-cols-2 gap-4">
+
+          {/* --- BAGIAN IDENTITAS BARU --- */}
+          <div className="border-b pb-6 border-gray-200">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">Identitas Pelapor</h3>
+            <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Nama Lengkap <span className="text-red-500">*</span>
                 </label>
                 <input 
                   type="text"
-                  name="nama"
+                  name="nama" // Tambahkan 'name'
                   value={formData.nama}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all"
+                  onChange={handleChange} // Gunakan handleChange
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   placeholder="Masukkan nama lengkap Anda"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
                   No. Telepon / WA (Opsional)
                 </label>
                 <input 
                   type="tel"
-                  name="telepon"
+                  name="telepon" // Tambahkan 'name'
                   value={formData.telepon}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all"
+                  onChange={handleChange} // Gunakan handleChange
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   placeholder="Untuk umpan balik"
                 />
               </div>
             </div>
-            <p className="text-xs text-gray-500 mt-3 bg-yellow-50 border border-yellow-200 rounded-lg p-2.5">
-              📋 <strong>Catatan:</strong> Nama Anda akan diteruskan ke Admin Desa untuk akuntabilitas.
+            <p className="text-xs text-gray-500 mt-3">
+              <span className="font-semibold">Nama Anda (Wajib)</span> akan diteruskan ke Admin Desa untuk akuntabilitas.
             </p>
           </div>
-
-          {/* Detail Laporan */}
-          <div className="space-y-4">
-            <h3 className="text-base font-semibold text-gray-800 mb-4">2. Detail Laporan</h3>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Kategori Permasalahan <span className="text-red-500">*</span>
-              </label>
-              <select 
-                name="kategori"
-                value={formData.kategori}
-                onChange={handleChange}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all"
-              >
-                <option value="">Pilih Kategori</option>
-                {kategoriOptions.map(kat => (
-                  <option key={kat} value={kat}>{kat}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Judul Laporan <span className="text-red-500">*</span>
-              </label>
-              <input 
-                type="text"
-                name="judul"
-                value={formData.judul}
-                onChange={handleChange}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all"
-                placeholder="Contoh: Jalan Rusak di RT 02"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Deskripsi Lengkap <span className="text-red-500">*</span>
-              </label>
-              <textarea 
-                name="deskripsi"
-                value={formData.deskripsi}
-                onChange={handleChange}
-                rows="5"
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all resize-none"
-                placeholder="Jelaskan permasalahan secara detail..."
-              ></textarea>
-            </div>
+          {/* --- END BAGIAN IDENTITAS --- */}
+          
+          {/* Bagian Laporan (yang sudah ada) */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Kategori Permasalahan <span className="text-red-500">*</span>
+            </label>
+            <select 
+              name="kategori" // Tambahkan 'name'
+              value={formData.kategori}
+              onChange={handleChange} // Gunakan handleChange
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            >
+              <option value="">Pilih Kategori</option>
+              {kategoriOptions.map(kat => (
+                <option key={kat} value={kat}>{kat}</option>
+              ))}
+            </select>
           </div>
 
-          {/* Upload Bukti */}
           <div>
-            <h3 className="text-base font-semibold text-gray-800 mb-4">3. Lampiran Dokumen/Bukti</h3>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-green-400 transition-colors">
-              <Upload className="mx-auto text-gray-400 mb-2" size={32} />
-              <p className="text-sm text-gray-600 mb-1">Upload foto, video, atau dokumen</p>
-              <p className="text-xs text-gray-400 mb-3">JPG, PNG, MP4, PDF (Max 10MB)</p>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Judul Laporan <span className="text-red-500">*</span>
+            </label>
+            <input 
+              type="text"
+              name="judul" // Tambahkan 'name'
+              value={formData.judul}
+              onChange={handleChange} // Gunakan handleChange
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              placeholder="Contoh: Jalan Rusak di RT 02"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Deskripsi Lengkap <span className="text-red-500">*</span>
+            </label>
+            <textarea 
+              name="deskripsi" // Tambahkan 'name'
+              value={formData.deskripsi}
+              onChange={handleChange} // Gunakan handleChange
+              rows="6"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              placeholder="Jelaskan permasalahan secara detail..."
+            ></textarea>
+          </div>
+
+          {/* ... (sisa kode upload file dan tombol) ... */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Lampiran Dokumen/Bukti
+            </label>
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-green-500 transition-colors">
+              <Upload className="mx-auto text-gray-400 mb-2" size={40} />
+              <p className="text-sm text-gray-600 mb-2">Upload foto, video, atau dokumen pendukung</p>
+              <p className="text-xs text-gray-400 mb-4">Format: JPG, PNG, MP4, PDF (Max 10MB)</p>
               <input 
                 type="file"
                 multiple
@@ -153,47 +163,42 @@ export default function LaporanPage({ setCurrentPage, onAddLaporan }) {
               />
               <label 
                 htmlFor="file-upload"
-                className="inline-block bg-green-600 text-white px-5 py-2 rounded-lg hover:bg-green-700 cursor-pointer transition-colors text-sm font-medium"
+                className="inline-block bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 cursor-pointer transition-colors"
               >
                 Pilih File
               </label>
             </div>
 
             {formData.files.length > 0 && (
-              <div className="mt-3 space-y-2">
+              <div className="mt-4 space-y-2">
                 {formData.files.map((file, index) => (
-                  <div key={index} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg border border-gray-200">
-                    <div className="flex items-center space-x-2">
-                      {file.type.startsWith('image/') ? 
-                        <Camera size={18} className="text-blue-600" /> : 
-                        <Video size={18} className="text-purple-600" />
-                      }
+                  <div key={index} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      {file.type.startsWith('image/') ? <Camera size={20} className="text-blue-500" /> : <Video size={20} className="text-purple-500" />}
                       <span className="text-sm text-gray-700">{file.name}</span>
                     </div>
                     <button 
                       onClick={() => removeFile(index)}
                       className="text-red-500 hover:text-red-700"
                     >
-                      <X size={18} />
+                      <X size={20} />
                     </button>
                   </div>
                 ))}
               </div>
             )}
           </div>
-
-          {/* Action Buttons */}
-          <div className="flex space-x-3 pt-4">
+          <div className="flex space-x-4">
             <button 
               onClick={handleSubmit}
-              className="flex-1 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center justify-center space-x-2 shadow-sm"
+              className="flex-1 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors font-semibold flex items-center justify-center space-x-2"
             >
-              <Send size={18} />
+              <Send size={20} />
               <span>Kirim Laporan</span>
             </button>
             <button 
               onClick={() => setCurrentPage('home')}
-              className="px-6 bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+              className="px-6 bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition-colors font-semibold"
             >
               Batal
             </button>

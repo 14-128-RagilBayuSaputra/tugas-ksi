@@ -7,23 +7,23 @@ import NotificationPanel from './components/Notifikasi';
 
 // Impor Halaman Admin
 import AdminLogin from './pages/AdminLogin';
-import AdminHomePage from './pages/AdminHomePage'; // <-- GANTI: Impor Beranda Admin
+import AdminHomePage from './pages/AdminHomePage';
 import TransparansiPage from './pages/Transparansi';
 import DaftarLaporan from './pages/DaftarLaporan';
 
-// (Salin kode AdminHeader dari respons saya sebelumnya ke sini...)
+// Komponen Header Admin
 const AdminHeader = ({ notifications, setShowNotification, showNotification, onLogout }) => (
-  <header className="bg-gradient-to-r from-blue-700 to-indigo-800 text-white shadow-lg">
-    <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+  // Header kembali ke gradient biru
+  <header className="bg-gradient-to-r from-blue-700 to-indigo-800 text-white shadow-lg sticky top-0 z-40">
+    <div className="container mx-auto px-4 py-3 flex justify-between items-center">
       <div className="flex items-center space-x-3">
-        <FileText size={32} />
-        <div className="w-14 h-14 flex-shrink-0 bg-white rounded-lg p-1.5 shadow-md">
-              <img 
-                src="/Logo Lampung selatan.png" 
-                alt="Logo Lampung Selatan"
-                className="w-full h-full object-contain"
-              />
-            </div>
+        
+        <img 
+          src="/Logo Lampung selatan.png" 
+          alt="Logo Lampung Selatan" 
+          className="h-12 w-auto object-contain"
+        />
+        
         <div>
           <h1 className="text-xl font-bold">Admin Panel - Sistem Kritik & Saran</h1>
         </div>
@@ -31,6 +31,7 @@ const AdminHeader = ({ notifications, setShowNotification, showNotification, onL
       <div className="flex items-center space-x-4">
         <button 
           onClick={() => setShowNotification(!showNotification)}
+          // Hover kembali ke biru
           className="relative p-2 hover:bg-blue-600 rounded-lg transition-colors"
         >
           <Bell size={24} />
@@ -52,7 +53,7 @@ const AdminHeader = ({ notifications, setShowNotification, showNotification, onL
   </header>
 );
 
-// (Salin kode AdminNavbar dari respons saya sebelumnya ke sini...)
+// Komponen Navbar Admin (Gaya "Pills" dengan shadow)
 const AdminNavbar = ({ currentPage, setCurrentPage }) => {
   const navItems = [
     { id: 'home', label: 'Beranda', icon: Home },
@@ -61,24 +62,30 @@ const AdminNavbar = ({ currentPage, setCurrentPage }) => {
   ];
 
   return (
-    <nav className="bg-white shadow-md">
-      <div className="container mx-auto px-4">
-        <div className="flex space-x-1">
-          {navItems.map(nav => (
+    <nav className="bg-white shadow-md sticky top-[76px] z-30">
+      {/* (76px adalah perkiraan tinggi header h-12 + py-3) */}
+      <div className="container mx-auto px-4 flex justify-center p-3 space-x-3">
+        {navItems.map(nav => {
+          const isActive = currentPage === nav.id;
+          return (
             <button
               key={nav.id}
               onClick={() => setCurrentPage(nav.id)}
-              className={`flex items-center space-x-2 px-6 py-4 font-medium transition-colors ${
-                currentPage === nav.id 
-                  ? 'text-blue-600 border-b-2 border-blue-600' 
-                  : 'text-gray-600 hover:text-blue-600'
-              }`}
+              className={`
+                flex items-center space-x-2 px-6 py-3 
+                font-medium rounded-lg
+                transition-all duration-200 ease-in-out
+                ${isActive 
+                  ? 'bg-blue-600 text-white shadow-lg transform -translate-y-1' // Gaya Aktif: Biru & Terangkat
+                  : 'bg-white text-gray-700 shadow-md hover:shadow-lg hover:-translate-y-1 hover:text-blue-600' // Gaya Normal: Putih & Shadow
+                }
+              `}
             >
               <nav.icon size={20} />
               <span>{nav.label}</span>
             </button>
-          ))}
-        </div>
+          );
+        })}
       </div>
     </nav>
   );
@@ -87,7 +94,10 @@ const AdminNavbar = ({ currentPage, setCurrentPage }) => {
 
 // Layout Utama Admin
 export default function AdminLayout({ laporan, onDelete, onUpdateStatus }) {
+  // --- INI ADALAH BARIS YANG DIPERBAIKI ---
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // ------------------------------------
+  
   const [currentPage, setCurrentPage] = useState('home');
   const [showNotification, setShowNotification] = useState(false);
   const [notifications] = useState(notificationsData);
@@ -95,8 +105,7 @@ export default function AdminLayout({ laporan, onDelete, onUpdateStatus }) {
   const renderCurrentPage = () => {
     switch (currentPage) {
       case 'home':
-        // --- PERUBAHAN DI SINI ---
-        return <AdminHomePage laporan={laporan} />; // Ganti ke AdminHomePage
+        return <AdminHomePage laporan={laporan} />;
       case 'daftar_laporan':
         return <DaftarLaporan 
                   laporan={laporan} 
@@ -106,8 +115,7 @@ export default function AdminLayout({ laporan, onDelete, onUpdateStatus }) {
       case 'transparansi':
         return <TransparansiPage laporan={laporan} />;
       default:
-        // --- PERUBAHAN DI SINI ---
-        return <AdminHomePage laporan={laporan} />; // Ganti ke AdminHomePage
+        return <AdminHomePage laporan={laporan} />;
     }
   };
 
@@ -116,7 +124,7 @@ export default function AdminLayout({ laporan, onDelete, onUpdateStatus }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-100">
       <AdminHeader 
         notifications={notifications}
         setShowNotification={setShowNotification}
@@ -128,7 +136,6 @@ export default function AdminLayout({ laporan, onDelete, onUpdateStatus }) {
         <NotificationPanel notifications={notifications} />
       )}
 
-      {/* Baris ini sekarang akan merender Navbar Admin */}
       <AdminNavbar 
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}

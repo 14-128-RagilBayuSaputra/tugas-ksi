@@ -1,0 +1,30 @@
+// src/pages/LaporanSukses.js
+import React from 'react';
+import { CheckCircle, Home } from 'lucide-react';
+
+export default function LaporanSukses({ setCurrentPage }) {
+  return (
+    <div className="max-w-3xl mx-auto">
+      <div className="bg-white rounded-xl shadow-lg p-8 text-center">
+        <CheckCircle 
+          className="text-green-500 mx-auto mb-4" 
+          size={64} 
+        />
+        <h2 className="text-3xl font-bold text-gray-800 mb-4">
+          Laporan Berhasil Terkirim!
+        </h2>
+        <p className="text-gray-600 text-lg mb-8">
+          Terima kasih atas partisipasi Anda. Laporan Anda sedang ditinjau oleh Admin.
+        </p>
+        
+        <button 
+          onClick={() => setCurrentPage('home')}
+          className="inline-flex items-center space-x-2 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-semibold"
+        >
+          <Home size={20} />
+          <span>Kembali ke Beranda</span>
+        </button>
+      </div>
+    </div>
+  );
+}
