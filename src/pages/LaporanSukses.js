@@ -5,15 +5,24 @@ import { CheckCircle, Home } from 'lucide-react';
 export default function LaporanSukses({ setCurrentPage }) {
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="bg-white rounded-xl shadow-lg p-8 text-center">
+      {/* --- PERUBAHAN DI SINI --- */}
+      {/* Kurangi padding di HP (p-6), tetap p-8 di desktop */}
+      <div className="bg-white rounded-xl shadow-xl p-6 md:p-8 text-center">
+      {/* ------------------------- */}
         <CheckCircle 
           className="text-green-500 mx-auto mb-4" 
           size={64} 
         />
-        <h2 className="text-3xl font-bold text-gray-800 mb-4">
+        {/* --- PERUBAHAN DI SINI --- */}
+        {/* Kurangi ukuran teks di HP (text-2xl) */}
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
+        {/* ------------------------- */}
           Laporan Berhasil Terkirim!
         </h2>
-        <p className="text-gray-600 text-lg mb-8">
+        {/* --- PERUBAHAN DI SINI --- */}
+        {/* Kurangi ukuran teks di HP (text-base) */}
+        <p className="text-base md:text-lg text-gray-600 mb-8">
+        {/* ------------------------- */}
           Terima kasih atas partisipasi Anda. Laporan Anda sedang ditinjau oleh Admin.
         </p>
         

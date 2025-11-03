@@ -4,6 +4,7 @@ import { Send, Camera, Video, Upload, X } from 'lucide-react';
 import { kategoriOptions } from '../data/appData';
 
 export default function LaporanPage({ setCurrentPage, onAddLaporan }) {
+  // ... (state dan fungsi-fungsi tidak berubah) ...
   const [formData, setFormData] = useState({
     nama: '',
     telepon: '',
@@ -12,68 +13,64 @@ export default function LaporanPage({ setCurrentPage, onAddLaporan }) {
     deskripsi: '',
     files: []
   });
-
   const handleFileUpload = (e) => {
-    // ... (kode tidak berubah)
     const files = Array.from(e.target.files);
     setFormData({...formData, files: [...formData.files, ...files]});
   };
-
   const removeFile = (index) => {
-    // ... (kode tidak berubah)
     const newFiles = formData.files.filter((_, i) => i !== index);
     setFormData({...formData, files: newFiles});
   };
-  
   const handleChange = (e) => {
-    // ... (kode tidak berubah)
     const { name, value } = e.target;
     setFormData(prevState => ({
       ...prevState,
       [name]: value
     }));
   };
-
   const handleSubmit = () => {
     if (formData.kategori && formData.judul && formData.deskripsi && formData.nama) {
-      // 1. Panggil fungsi onAddLaporan dari App.js
       onAddLaporan(formData); 
-      
-      // 2. Reset form
       setFormData({ 
         nama: '', telepon: '', 
         kategori: '', judul: '', deskripsi: '', files: [] 
       });
-
-      // 3. Pindah ke halaman sukses (BUKAN 'home' dan HAPUS alert)
       setCurrentPage('laporan_sukses'); 
-      
     } else {
       alert('Mohon lengkapi Nama, Kategori, Judul, dan Deskripsi!');
     }
   };
 
   return (
-    // ... (Seluruh JSX formulir Anda tidak perlu diubah) ...
     <div className="max-w-3xl mx-auto">
-      <div className="bg-white rounded-xl shadow-lg p-8">
+      {/* --- PERUBAHAN DI SINI --- */}
+      {/* Kurangi padding di HP (p-4), tetap p-8 di desktop */}
+      <div className="bg-white rounded-xl shadow-xl p-4 md:p-8">
+      {/* ------------------------- */}
+
         <h2 className="text-2xl font-bold text-gray-800 mb-6">Buat Laporan Baru</h2>
         
         <div className="space-y-6">
 
-          {/* --- BAGIAN IDENTITAS BARU --- */}
           <div className="border-b pb-6 border-gray-200">
             <h3 className="text-lg font-semibold text-gray-800 mb-4">Identitas Pelapor</h3>
-            <div className="grid md:grid-cols-2 gap-6">
+            
+            {/* --- PERUBAHAN DI SINI --- */}
+            {/* 'grid-cols-1': HP (1 kolom)
+              'md:grid-cols-2': Desktop (2 kolom)
+            */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* ------------------------- */}
+
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Nama Lengkap <span className="text-red-500">*</span>
                 </label>
                 <input 
                   type="text"
-                  name="nama" // Tambahkan 'name'
+                  name="nama"
                   value={formData.nama}
-                  onChange={handleChange} // Gunakan handleChange
+                  onChange={handleChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   placeholder="Masukkan nama lengkap Anda"
                 />
@@ -84,9 +81,9 @@ export default function LaporanPage({ setCurrentPage, onAddLaporan }) {
                 </label>
                 <input 
                   type="tel"
-                  name="telepon" // Tambahkan 'name'
+                  name="telepon"
                   value={formData.telepon}
-                  onChange={handleChange} // Gunakan handleChange
+                  onChange={handleChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   placeholder="Untuk umpan balik"
                 />
@@ -96,17 +93,16 @@ export default function LaporanPage({ setCurrentPage, onAddLaporan }) {
               <span className="font-semibold">Nama Anda (Wajib)</span> akan diteruskan ke Admin Desa untuk akuntabilitas.
             </p>
           </div>
-          {/* --- END BAGIAN IDENTITAS --- */}
           
-          {/* Bagian Laporan (yang sudah ada) */}
+          {/* ... (sisa formulir: Kategori, Judul, Deskripsi) ... */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Kategori Permasalahan <span className="text-red-500">*</span>
             </label>
             <select 
-              name="kategori" // Tambahkan 'name'
+              name="kategori"
               value={formData.kategori}
-              onChange={handleChange} // Gunakan handleChange
+              onChange={handleChange}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
             >
               <option value="">Pilih Kategori</option>
@@ -122,9 +118,9 @@ export default function LaporanPage({ setCurrentPage, onAddLaporan }) {
             </label>
             <input 
               type="text"
-              name="judul" // Tambahkan 'name'
+              name="judul"
               value={formData.judul}
-              onChange={handleChange} // Gunakan handleChange
+              onChange={handleChange}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               placeholder="Contoh: Jalan Rusak di RT 02"
             />
@@ -135,16 +131,15 @@ export default function LaporanPage({ setCurrentPage, onAddLaporan }) {
               Deskripsi Lengkap <span className="text-red-500">*</span>
             </label>
             <textarea 
-              name="deskripsi" // Tambahkan 'name'
+              name="deskripsi"
               value={formData.deskripsi}
-              onChange={handleChange} // Gunakan handleChange
+              onChange={handleChange}
               rows="6"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               placeholder="Jelaskan permasalahan secara detail..."
             ></textarea>
           </div>
 
-          {/* ... (sisa kode upload file dan tombol) ... */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Lampiran Dokumen/Bukti
@@ -175,11 +170,11 @@ export default function LaporanPage({ setCurrentPage, onAddLaporan }) {
                   <div key={index} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
                     <div className="flex items-center space-x-3">
                       {file.type.startsWith('image/') ? <Camera size={20} className="text-blue-500" /> : <Video size={20} className="text-purple-500" />}
-                      <span className="text-sm text-gray-700">{file.name}</span>
+                      <span className="text-sm text-gray-700 truncate">{file.name}</span>
                     </div>
                     <button 
                       onClick={() => removeFile(index)}
-                      className="text-red-500 hover:text-red-700"
+                      className="text-red-500 hover:text-red-700 flex-shrink-0"
                     >
                       <X size={20} />
                     </button>
@@ -188,7 +183,13 @@ export default function LaporanPage({ setCurrentPage, onAddLaporan }) {
               </div>
             )}
           </div>
-          <div className="flex space-x-4">
+          
+          {/* --- PERUBAHAN DI SINI (TOMBOL) --- */}
+          {/* 'flex-col': Stack tombol di HP
+            'sm:flex-row': Tombol berdampingan di layar lebih besar
+          */}
+          <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+          {/* --------------------------------- */}
             <button 
               onClick={handleSubmit}
               className="flex-1 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors font-semibold flex items-center justify-center space-x-2"
@@ -198,7 +199,8 @@ export default function LaporanPage({ setCurrentPage, onAddLaporan }) {
             </button>
             <button 
               onClick={() => setCurrentPage('home')}
-              className="px-6 bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition-colors font-semibold"
+              // Buat 'w-full' di HP dan 'w-auto' di desktop
+              className="w-full sm:w-auto px-6 bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition-colors font-semibold"
             >
               Batal
             </button>

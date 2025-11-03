@@ -10,13 +10,16 @@ const navItems = [
 
 export default function Navbar({ currentPage, setCurrentPage }) {
   return (
-    // Navbar putih 'sticky' di bawah header
     <nav className="bg-white shadow-md sticky top-[76px] z-30"> 
       {/* (76px adalah tinggi header h-12 + padding py-3) */}
 
-      {/* Container untuk tombol-tombol */}
-      <div className="container mx-auto px-4 flex justify-center p-3 space-x-3">
-        {/* ^ Saya ganti p-2 -> p-3 dan space-x-2 -> space-x-3 agar lebih lega */}
+      {/* --- PERUBAHAN DI SINI --- */}
+      {/* 1. 'overflow-x-auto': Membuat konten di dalamnya bisa di-scroll horizontal di HP
+        2. 'justify-start md:justify-center': Mulai dari kiri di HP, tapi tetap di tengah di desktop
+        3. 'px-2 py-3': Sesuaikan padding untuk mobile
+      */}
+      <div className="container mx-auto px-2 py-3 flex justify-start md:justify-center overflow-x-auto space-x-2">
+      {/* ------------------------- */}
         
         {navItems.map(nav => {
           const isActive = currentPage === nav.id;
@@ -26,19 +29,20 @@ export default function Navbar({ currentPage, setCurrentPage }) {
               key={nav.id}
               onClick={() => setCurrentPage(nav.id)}
               
-              // --- PERUBAHAN GAYA DI SINI ---
+              // --- PERUBAHAN DI SINI ---
               className={`
-                flex items-center space-x-2 px-6 py-3 
+                flex items-center space-x-2 px-4 md:px-6 py-3 
                 font-medium rounded-lg
                 transition-all duration-200 ease-in-out
+                flex-shrink-0 whitespace-nowrap {/* <-- Mencegah tombol terpotong/wrap */}
                 ${isActive 
-                  ? 'bg-green-600 text-white shadow-lg transform -translate-y-1' // Gaya Aktif: Terangkat dan Berwarna
-                  : 'bg-white text-gray-700 shadow-md hover:shadow-lg hover:-translate-y-1 hover:text-green-600' // Gaya Normal: Putih dan ber-shadow
+                  ? 'bg-green-600 text-white shadow-lg transform -translate-y-1' 
+                  : 'bg-white text-gray-700 shadow-md hover:shadow-lg hover:-translate-y-1 hover:text-green-600'
                 }
               `}
               // ---------------------------------
             >
-              <nav.icon size={20} />
+              <nav.icon size={18} /> {/* Ukuran ikon dikecilkan sedikit */}
               <span>{nav.label}</span>
             </button>
           );

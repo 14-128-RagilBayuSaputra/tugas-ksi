@@ -15,17 +15,15 @@ export default function DaftarLaporan({ laporan, onDelete, onUpdateStatus }) {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6 md:p-8"> 
+    // --- PERUBAHAN DI SINI ---
+    // Kurangi padding di HP (p-4), tetap p-8 di desktop
+    <div className="bg-white rounded-xl shadow-xl p-4 md:p-8"> 
+    {/* ----------------------- */}
+
       <h2 className="text-2xl font-bold text-gray-800 mb-6">Daftar Laporan Masuk</h2>
       
-      {/* --- PERUBAHAN DI SINI --- */}
-      {/* 1. overflow-x-auto: Agar tabel bisa di-scroll di HP */}
-      {/* 2. rounded-lg: Agar sudut tabel tumpul */}
-      {/* 3. shadow-md: Ini adalah bayangan/shadow yang Anda minta */}
-      {/* 4. border: Garis tipis agar lebih rapi */}
+      {/* Kode ini sudah responsif (scroll horizontal) */}
       <div className="overflow-x-auto rounded-lg shadow-md border border-gray-200">
-      {/* ----------------------- */}
-
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>

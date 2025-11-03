@@ -1,36 +1,33 @@
 // src/components/Header.js
 
 import React from 'react';
-// Hapus ikon navigasi, sisakan Bell
 import { Bell } from 'lucide-react'; 
 
-// Hapus props 'currentPage' dan 'setCurrentPage'
-export default function Header({ 
-  notifications, 
-  setShowNotification, 
-  showNotification, 
-  isLoggedIn 
-}) {
+export default function Header({ notifications, setShowNotification, showNotification, isLoggedIn }) {
   return (
-    // Kita buat sticky agar tetap di atas
     <header className="bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg sticky top-0 z-40">
-      {/* Kembalikan padding py-3 */}
+      {/* Tambahkan padding horizontal 'px-4' untuk mobile */}
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        
-        <div className="flex items-center space-x-3">
-          {/* Logo h-12 Anda tetap di sini */}
+        <div className="flex items-center space-x-3 overflow-hidden"> {/* Tambahkan overflow-hidden */}
+          
           <img 
             src="/Logo Lampung selatan.png" 
             alt="Logo Lampung Selatan" 
-            className="h-12 w-auto object-contain" 
+            className="h-12 w-auto object-contain flex-shrink-0" // Tambahkan flex-shrink-0
           />
+          
           <div>
-            <h1 className="text-xl font-bold">Sistem Kritik & Saran Desa</h1>
-            <p className="text-sm text-green-100">Portal Aspirasi Warga</p>
+            {/* --- PERUBAHAN DI SINI --- */}
+            {/* Ukuran teks di HP (text-lg) dan di desktop (md:text-xl) */}
+            <h1 className="text-lg md:text-xl font-bold whitespace-nowrap">Sistem Kritik & Saran Desa</h1>
+            {/* Sembunyikan di HP (hidden), tampilkan di tablet/desktop (md:block) */}
+            <p className="text-sm text-green-100 hidden md:block">Portal Aspirasi Warga</p>
+            {/* ------------------------- */}
           </div>
         </div>
         
-        <div className="flex items-center space-x-4">
+        {/* Kurangi jarak di HP */}
+        <div className="flex items-center space-x-2 md:space-x-4">
           <button 
             onClick={() => setShowNotification(!showNotification)}
             className="relative p-2 hover:bg-green-500 rounded-lg transition-colors"
@@ -42,7 +39,7 @@ export default function Header({
               </span>
             )}
           </button>
-          {/* (Tombol isLoggedIn tidak akan tampil di UserLayout) */}
+          
           {isLoggedIn && (
             <button 
               onClick={() => alert('Logout action')}
@@ -53,9 +50,6 @@ export default function Header({
           )}
         </div>
       </div>
-
-      {/* HAPUS SEMUA KODE NAVBAR YANG DIGABUNG DARI SINI */}
-
     </header>
   );
 }

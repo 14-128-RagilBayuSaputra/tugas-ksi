@@ -13,25 +13,26 @@ import DaftarLaporan from './pages/DaftarLaporan';
 
 // Komponen Header Admin
 const AdminHeader = ({ notifications, setShowNotification, showNotification, onLogout }) => (
-  // Header kembali ke gradient biru
   <header className="bg-gradient-to-r from-blue-700 to-indigo-800 text-white shadow-lg sticky top-0 z-40">
     <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-      <div className="flex items-center space-x-3">
+      <div className="flex items-center space-x-3 overflow-hidden"> {/* Tambahkan overflow-hidden */}
         
         <img 
           src="/Logo Lampung selatan.png" 
           alt="Logo Lampung Selatan" 
-          className="h-12 w-auto object-contain"
+          className="h-12 w-auto object-contain flex-shrink-0" // Tambahkan flex-shrink-0
         />
         
         <div>
-          <h1 className="text-xl font-bold">Admin Panel - Sistem Kritik & Saran</h1>
+          {/* --- PERUBAHAN DI SINI --- */}
+          <h1 className="text-lg md:text-xl font-bold whitespace-nowrap">Admin Panel - Sistem Kritik & Saran</h1>
+          {/* ------------------------- */}
         </div>
       </div>
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center space-x-2 md:space-x-4">
+        {/* ... (Tombol Notifikasi) ... */}
         <button 
           onClick={() => setShowNotification(!showNotification)}
-          // Hover kembali ke biru
           className="relative p-2 hover:bg-blue-600 rounded-lg transition-colors"
         >
           <Bell size={24} />
@@ -46,14 +47,17 @@ const AdminHeader = ({ notifications, setShowNotification, showNotification, onL
           className="flex items-center space-x-2 bg-red-600 px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
         >
           <LogOut size={18} />
-          <span>Keluar</span>
+          {/* --- PERUBAHAN DI SINI --- */}
+          {/* Sembunyikan teks "Keluar" di HP */}
+          <span className="hidden sm:inline">Keluar</span>
+          {/* ------------------------- */}
         </button>
       </div>
     </div>
   </header>
 );
 
-// Komponen Navbar Admin (Gaya "Pills" dengan shadow)
+// Komponen Navbar Admin
 const AdminNavbar = ({ currentPage, setCurrentPage }) => {
   const navItems = [
     { id: 'home', label: 'Beranda', icon: Home },
@@ -63,8 +67,12 @@ const AdminNavbar = ({ currentPage, setCurrentPage }) => {
 
   return (
     <nav className="bg-white shadow-md sticky top-[76px] z-30">
-      {/* (76px adalah perkiraan tinggi header h-12 + py-3) */}
-      <div className="container mx-auto px-4 flex justify-center p-3 space-x-3">
+      
+      {/* --- PERUBAHAN DI SINI --- */}
+      {/* Terapkan logika scroll horizontal yang sama */}
+      <div className="container mx-auto px-2 py-3 flex justify-start md:justify-center overflow-x-auto space-x-2">
+      {/* ------------------------- */}
+      
         {navItems.map(nav => {
           const isActive = currentPage === nav.id;
           return (
@@ -72,16 +80,17 @@ const AdminNavbar = ({ currentPage, setCurrentPage }) => {
               key={nav.id}
               onClick={() => setCurrentPage(nav.id)}
               className={`
-                flex items-center space-x-2 px-6 py-3 
+                flex items-center space-x-2 px-4 md:px-6 py-3 
                 font-medium rounded-lg
                 transition-all duration-200 ease-in-out
+                flex-shrink-0 whitespace-nowrap {/* <-- Mencegah tombol terpotong/wrap */}
                 ${isActive 
-                  ? 'bg-blue-600 text-white shadow-lg transform -translate-y-1' // Gaya Aktif: Biru & Terangkat
-                  : 'bg-white text-gray-700 shadow-md hover:shadow-lg hover:-translate-y-1 hover:text-blue-600' // Gaya Normal: Putih & Shadow
+                  ? 'bg-blue-600 text-white shadow-lg transform -translate-y-1'
+                  : 'bg-white text-gray-700 shadow-md hover:shadow-lg hover:-translate-y-1 hover:text-blue-600'
                 }
               `}
             >
-              <nav.icon size={20} />
+              <nav.icon size={18} />
               <span>{nav.label}</span>
             </button>
           );
@@ -94,10 +103,8 @@ const AdminNavbar = ({ currentPage, setCurrentPage }) => {
 
 // Layout Utama Admin
 export default function AdminLayout({ laporan, onDelete, onUpdateStatus }) {
-  // --- INI ADALAH BARIS YANG DIPERBAIKI ---
+  // ... (Sisa kode state, renderCurrentPage, dan return tidak berubah) ...
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  // ------------------------------------
-  
   const [currentPage, setCurrentPage] = useState('home');
   const [showNotification, setShowNotification] = useState(false);
   const [notifications] = useState(notificationsData);
