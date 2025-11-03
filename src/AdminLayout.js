@@ -17,6 +17,13 @@ const AdminHeader = ({ notifications, setShowNotification, showNotification, onL
     <div className="container mx-auto px-4 py-4 flex justify-between items-center">
       <div className="flex items-center space-x-3">
         <FileText size={32} />
+        <div className="w-14 h-14 flex-shrink-0 bg-white rounded-lg p-1.5 shadow-md">
+              <img 
+                src="/Logo Lampung selatan.png" 
+                alt="Logo Lampung Selatan"
+                className="w-full h-full object-contain"
+              />
+            </div>
         <div>
           <h1 className="text-xl font-bold">Admin Panel - Sistem Kritik & Saran</h1>
         </div>

@@ -1,10 +1,9 @@
-// src/UserLayout.js
-
+// src/UserLayout.js - Updated dengan Background Abu-abu
 import React, { useState } from 'react';
 import { notificationsData } from './data/appData'; 
 
 import Header from './components/Header';
-import Navbar from './components/Navbar'; // <-- UBAH INI (dari Navbar ke Navibar)
+import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import NotificationPanel from './components/Notifikasi';
 
@@ -31,7 +30,7 @@ export default function UserLayout({ onAddLaporan, laporanPublik }) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-100">
       <Header 
         notifications={notifications}
         setShowNotification={setShowNotification}
@@ -43,13 +42,12 @@ export default function UserLayout({ onAddLaporan, laporanPublik }) {
         <NotificationPanel notifications={notifications} />
       )}
 
-      {/* Baris ini sekarang akan berfungsi */}
       <Navbar 
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
       />
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4">
         {renderCurrentPage()}
       </main>
 
