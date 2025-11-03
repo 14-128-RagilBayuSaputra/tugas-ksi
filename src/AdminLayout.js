@@ -11,55 +11,10 @@ import AdminHomePage from './pages/AdminHomePage';
 import TransparansiPage from './pages/Transparansi';
 import DaftarLaporan from './pages/DaftarLaporan';
 
-// Komponen Header Admin
-const AdminHeader = ({ notifications, setShowNotification, showNotification, onLogout }) => (
-  <header className="bg-gradient-to-r from-blue-700 to-indigo-800 text-white shadow-lg sticky top-0 z-40">
-    <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-      
-      {/* --- PERUBAHAN DI SINI --- */}
-      <div className="flex items-center space-x-3 min-w-0"> {/* Tambahkan min-w-0 */}
-        
-        <img 
-          src="/Logo Lampung selatan.png" 
-          alt="Logo Lampung Selatan" 
-          // Ukuran logo di HP (h-10) dan di desktop (md:h-12)
-          className="h-10 md:h-12 w-auto object-contain flex-shrink-0"
-        />
-        
-        <div className="min-w-0">
-          {/* Ukuran teks di HP (text-base) dan di desktop (md:text-xl) */}
-          {/* Hapus 'whitespace-nowrap' agar teks bisa turun */}
-          <h1 className="text-base md:text-xl font-bold truncate">Admin Panel - Sistem Kritik & Saran</h1>
-        </div>
-      </div>
-      {/* ------------------------- */}
 
-      <div className="flex items-center space-x-2 md:space-x-4 flex-shrink-0">
-        <button 
-          onClick={() => setShowNotification(!showNotification)}
-          className="relative p-2 hover:bg-blue-600 rounded-lg transition-colors"
-        >
-          <Bell size={24} />
-          {notifications.length > 0 && (
-            <span className="absolute top-0 right-0 bg-red-500 text-xs rounded-full w-5 h-5 flex items-center justify-center">
-              {notifications.length}
-            </span>
-          )}
-        </button>
-        <button 
-          onClick={onLogout}
-          className="flex items-center space-x-2 bg-red-600 px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
-        >
-          <LogOut size={18} />
-          <span className="hidden sm:inline">Keluar</span>
-        </button>
-      </div>
-    </div>
-  </header>
-);
-
-// Komponen Navbar Admin
-const AdminNavbar = ({ currentPage, setCurrentPage }) => {
+// --- 1. KOMPONEN SIDEBAR BARU ---
+// Ini adalah Navbar Anda yang diubah menjadi vertikal
+const AdminSidebar = ({ currentPage, setCurrentPage }) => {
   const navItems = [
     { id: 'home', label: 'Beranda', icon: Home },
     { id: 'daftar_laporan', label: 'Daftar Laporan', icon: FileText },
@@ -67,10 +22,24 @@ const AdminNavbar = ({ currentPage, setCurrentPage }) => {
   ];
 
   return (
-    <nav className="bg-white shadow-md sticky top-[68px] z-30"> 
-    {/* ^ Ubah top-[76px] -> top-[68px] (karena header lebih pendek di HP) */}
+    // Sidebar container: Lebar tetap, tinggi penuh, 'sticky', dan bg gelap
+    <div className="w-64 min-h-screen bg-gray-800 text-white flex flex-col shadow-lg sticky top-0">
       
-      <div className="container mx-auto px-2 py-3 flex justify-start md:justify-center overflow-x-auto space-x-2">
+      {/* Bagian Logo/Header di dalam Sidebar */}
+      <div className="flex items-center space-x-3 p-4 border-b border-gray-700">
+        <img 
+          src="/Logo Lampung selatan.png" 
+          alt="Logo Lampung Selatan" 
+          className="h-12 w-auto object-contain"
+        />
+        <div>
+          <h1 className="text-lg font-semibold">Admin Panel</h1>
+          <p className="text-xs text-gray-400">Kritik & Saran</p>
+        </div>
+      </div>
+      
+      {/* Navigasi Links */}
+      <nav className="flex-1 px-3 py-4 space-y-2">
         {navItems.map(nav => {
           const isActive = currentPage === nav.id;
           return (
@@ -78,30 +47,58 @@ const AdminNavbar = ({ currentPage, setCurrentPage }) => {
               key={nav.id}
               onClick={() => setCurrentPage(nav.id)}
               className={`
-                {/* --- PERUBAHAN DI SINI --- */}
-                flex items-center space-x-2 px-3 md:px-6 py-3 {/* Ubah px-4 -> px-3 */}
-                {/* ------------------------- */}
+                flex items-center space-x-3 w-full px-4 py-3 
                 font-medium rounded-lg
-                transition-all duration-200 ease-in-out
-                flex-shrink-0 whitespace-nowrap
+                transition-colors duration-200
                 ${isActive 
-                  ? 'bg-blue-600 text-white shadow-lg transform -translate-y-1'
-                  : 'bg-white text-gray-700 shadow-md hover:shadow-lg hover:-translate-y-1 hover:text-blue-600'
+                  ? 'bg-blue-600 text-white shadow-md' // Gaya Aktif
+                  : 'text-gray-300 hover:bg-gray-700 hover:text-white' // Gaya Normal
                 }
               `}
             >
-              <nav.icon size={18} />
+              <nav.icon size={20} />
               <span>{nav.label}</span>
             </button>
           );
         })}
-      </div>
-    </nav>
+      </nav>
+    </div>
   );
 };
 
 
-// Layout Utama Admin
+// --- 2. KOMPONEN HEADER BARU ---
+// Ini HANYA berisi tombol Notifikasi dan Logout
+const AdminHeader = ({ notifications, setShowNotification, showNotification, onLogout }) => (
+  <header className="bg-white shadow-sm z-10">
+    <div className="container mx-auto px-4 py-4 flex justify-end items-center">
+      {/* Mendorong semua item ke kanan */}
+      <div className="flex items-center space-x-4">
+        <button 
+          onClick={() => setShowNotification(!showNotification)}
+          className="relative p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          <Bell size={24} />
+          {notifications.length > 0 && (
+            <span className="absolute top-0 right-0 bg-red-500 text-xs rounded-full w-5 h-5 flex items-center justify-center text-white">
+              {notifications.length}
+            </span>
+          )}
+        </button>
+        <button 
+          onClick={onLogout}
+          className="flex items-center space-x-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+        >
+          <LogOut size={18} />
+          <span>Keluar</span>
+        </button>
+      </div>
+    </div>
+  </header>
+);
+
+
+// --- 3. LAYOUT UTAMA ADMIN (YANG DI-EXPORT) ---
 export default function AdminLayout({ laporan, onDelete, onUpdateStatus }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentPage, setCurrentPage] = useState('home');
@@ -125,33 +122,45 @@ export default function AdminLayout({ laporan, onDelete, onUpdateStatus }) {
     }
   };
 
+  // Tampilkan Login Admin jika belum login
   if (!isLoggedIn) {
     return <AdminLogin onLoginSuccess={() => setIsLoggedIn(true)} />;
   }
 
+  // Tampilkan Layout Dashboard Admin jika sudah login
   return (
-    <div className="min-h-screen bg-gray-100">
-      <AdminHeader 
-        notifications={notifications}
-        setShowNotification={setShowNotification}
-        showNotification={showNotification}
-        onLogout={() => setIsLoggedIn(false)}
-      />
-
-      {showNotification && (
-        <NotificationPanel notifications={notifications} />
-      )}
-
-      <AdminNavbar 
+    // Gunakan 'flex' untuk membagi Sidebar dan Konten Utama
+    <div className="flex min-h-screen bg-gray-100">
+      
+      {/* --- Sidebar (Kolom Kiri) --- */}
+      <AdminSidebar 
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
       />
+      
+      {/* --- Area Konten (Kolom Kanan) --- */}
+      <div className="flex-1 flex flex-col">
+        
+        <AdminHeader 
+          notifications={notifications}
+          setShowNotification={setShowNotification}
+          showNotification={showNotification}
+          onLogout={() => setIsLoggedIn(false)}
+        />
+        
+        {/* Notifikasi akan muncul di atas kanan, relative to viewport */}
+        {showNotification && (
+          <NotificationPanel notifications={notifications} />
+        )}
 
-      <main className="container mx-auto px-4 py-8">
-        {renderCurrentPage()}
-      </main>
-
-      <Footer />
+        {/* Konten Halaman */}
+        <main className="container mx-auto px-4 py-8">
+          {renderCurrentPage()}
+        </main>
+        
+        {/* Footer bisa kita hilangkan di layout admin jika mau, tapi kita biarkan dulu */}
+        <Footer /> 
+      </div>
     </div>
   );
 }
