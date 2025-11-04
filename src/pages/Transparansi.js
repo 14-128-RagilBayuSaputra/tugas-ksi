@@ -44,17 +44,16 @@ export default function TransparansiPage({ laporan = [] }) {
         
         <div className="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0">
           {/* --- PERUBAHAN: Kecilkan font di HP --- */}
-          <h2 className="text-lg md:text-2xl font-bold text-gray-800 text-center md:text-left">Transparansi Laporan Warga</h2>
+          <h2 className="text-base md:text-2xl font-bold text-gray-800 text-center md:text-left">Transparansi Laporan Warga</h2>
           <button 
             onClick={downloadReport}
-            className="flex items-center justify-center space-x-2 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors w-full md:w-auto shadow-md hover:shadow-lg"
+            className="flex items-center justify-center space-x-2 bg-green-600 text-white px-5 py-2 rounded-lg hover:bg-green-700 transition-colors w-full md:w-auto shadow-md hover:shadow-lg text-sm"
           >
-            <Download size={20} />
+            <Download size={18} />
             <span>Download Laporan</span>
           </button>
         </div>
 
-        {/* --- PERUBAHAN: 2 kolom di HP (grid-cols-2) --- */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
           {processedLaporanData.map(item => (
             <div key={item.kategori} className="bg-white p-3 md:p-4 rounded-lg border border-gray-200 shadow-lg">
@@ -143,6 +142,7 @@ export default function TransparansiPage({ laporan = [] }) {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="text-center p-4 md:p-6 bg-green-50 rounded-lg shadow-md">
+            {/* --- PERUBAHAN: Kecilkan font di HP --- */}
             <p className="text-2xl md:text-3xl font-bold text-green-600 mb-2">{totalSelesai}</p>
             <p className="text-sm md:text-base text-gray-700 font-medium">Laporan Selesai</p>
             <p className="text-sm text-gray-500 mt-1">{getPercentage(totalSelesai)}% dari total</p>

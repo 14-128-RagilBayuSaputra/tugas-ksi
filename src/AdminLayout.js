@@ -1,7 +1,6 @@
 // src/AdminLayout.js
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Home, FileText, BarChart3, LogOut, Bell, Check, Loader, Clock, Menu, X } from 'lucide-react';
-import { notificationsData } from './data/appData';
 import Footer from './components/Footer';
 import NotificationPanel from './components/Notifikasi';
 
@@ -12,7 +11,7 @@ import TransparansiPage from './pages/Transparansi';
 import DaftarLaporan from './pages/DaftarLaporan';
 
 
-// --- 1. KOMPONEN HEADER SIDEBAR (KONSISTEN) ---
+// --- (SidebarHeader dan SidebarContent tidak berubah) ---
 const SidebarHeader = ({ isExpanded = true, onCloseMobile }) => (
   <div className="flex items-center justify-between p-4 border-b border-gray-700 h-[81px]">
     <div className="flex items-center space-x-3 min-w-0">
@@ -26,7 +25,6 @@ const SidebarHeader = ({ isExpanded = true, onCloseMobile }) => (
         <p className="text-xs text-gray-400">Kritik & Saran</p>
       </div>
     </div>
-    {/* Tampilkan tombol 'X' jika ini adalah sidebar mobile */}
     {onCloseMobile && (
       <button 
         onClick={onCloseMobile} 
@@ -38,8 +36,6 @@ const SidebarHeader = ({ isExpanded = true, onCloseMobile }) => (
   </div>
 );
 
-
-// --- 2. KOMPONEN KONTEN SIDEBAR ---
 const SidebarContent = ({ currentPage, setCurrentPage, laporan, onLogout, isExpanded, onToggleDesktop }) => {
   const navItems = [
     { id: 'home', label: 'Beranda', icon: Home },
@@ -53,10 +49,8 @@ const SidebarContent = ({ currentPage, setCurrentPage, laporan, onLogout, isExpa
 
   return (
     <>
-      {/* Navigasi Utama */}
       <nav className="px-3 py-4 space-y-2">
         
-        {/* Tombol Menu (Hamburger) HANYA di Desktop */}
         <button 
           onClick={onToggleDesktop} 
           className={`
@@ -78,7 +72,6 @@ const SidebarContent = ({ currentPage, setCurrentPage, laporan, onLogout, isExpa
           </span>
         </button>
 
-        {/* Garis Pemisah */}
         <div className={`border-b border-gray-700 pt-2 ${!onToggleDesktop ? 'hidden' : 'hidden md:block'}`}></div>
 
         {navItems.map(nav => {
@@ -112,7 +105,6 @@ const SidebarContent = ({ currentPage, setCurrentPage, laporan, onLogout, isExpa
           );
         })}
         
-        {/* Tombol Keluar */}
         <button
           onClick={onLogout}
           className={`
@@ -136,7 +128,6 @@ const SidebarContent = ({ currentPage, setCurrentPage, laporan, onLogout, isExpa
         </button>
       </nav>
 
-      {/* Ringkasan Laporan */}
       <div 
         className={`
           px-3 py-4 border-t border-gray-700 space-y-3 
@@ -174,27 +165,21 @@ const SidebarContent = ({ currentPage, setCurrentPage, laporan, onLogout, isExpa
   );
 };
 
-// --- 3. KOMPONEN HEADER KONTEN (DIPERBAIKI) ---
+// --- 3. KOMPONEN HEADER KONTEN ---
 const MainHeader = ({ onToggleMobileSidebar, notifications, setShowNotification, showNotification }) => (
   <header className="
     md:bg-white bg-gray-900 
     shadow-sm z-10 p-4 flex justify-between items-center sticky top-0
   ">
-    {/* Tombol Hamburger (HANYA di HP) */}
     <button onClick={onToggleMobileSidebar} className="p-2 -ml-2 text-gray-300 rounded-lg hover:bg-gray-700 md:hidden">
       <Menu size={24} />
     </button>
-
-    {/* Judul Halaman (HANYA di HP) */}
     <h1 className="text-lg font-semibold text-white md:hidden">Admin Panel</h1>
-
-    {/* Spacer (HANYA di Desktop, agar Notif ke kanan) */}
     <div className="hidden md:block flex-1"></div>
-
-    {/* Notifikasi */}
     <div className="flex items-center space-x-2 md:space-x-4">
       <button 
-        onClick={() => setShowNotification(true)}
+        onClick={() => setShowNotification(prev => !prev)} // Gunakan toggle
+        data-testid="notif-button"
         className="relative p-2 text-gray-300 md:text-gray-600 hover:bg-gray-700 md:hover:bg-gray-100 rounded-lg transition-colors"
       >
         <Bell size={24} />
@@ -204,23 +189,41 @@ const MainHeader = ({ onToggleMobileSidebar, notifications, setShowNotification,
           </span>
         )}
       </button>
-      
-      {/* --- TOMBOL KELUAR DI HEADER SUDAH DIHAPUS --- */}
-      
     </div>
   </header>
 );
 
 
-// --- 4. LAYOUT UTAMA ADMIN (LOGIKA BARU) ---
-export default function AdminLayout({ laporan, onDelete, onUpdateStatus }) {
+// --- 4. LAYOUT UTAMA ADMIN ---
+// --- PERBAIKAN: Terima props notifikasi baru ---
+export default function AdminLayout({ 
+  laporan, onDelete, onUpdateStatus, 
+  notifications, onDeleteNotification, onClearAllNotifications 
+}) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentPage, setCurrentPage] = useState('home');
   const [showNotification, setShowNotification] = useState(false);
-  const [notifications] = useState(notificationsData);
   
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isDesktopSidebarOpen, setIsDesktopSidebarOpen] = useState(true);
+
+  const notificationRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+        if (!event.target.closest('[data-testid="notif-button"]')) {
+          setShowNotification(false);
+        }
+      }
+    }
+    if (showNotification) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showNotification]); 
 
   const renderCurrentPage = () => {
     // ... (Tidak ada perubahan) ...
@@ -244,16 +247,14 @@ export default function AdminLayout({ laporan, onDelete, onUpdateStatus }) {
     return <AdminLogin onLoginSuccess={() => setIsLoggedIn(true)} />;
   }
 
-  // Fungsi untuk handle klik navigasi (tutup sidebar mobile)
   const handleNavClick = (page) => {
     setCurrentPage(page);
-    setIsMobileSidebarOpen(false); // Tutup sidebar saat item di-klik
+    setIsMobileSidebarOpen(false); 
   };
 
   return (
     <div className="flex min-h-screen bg-gray-100">
       
-      {/* --- SIDEBAR (Desktop) --- */}
       <div 
         className={`
           hidden md:flex flex-col bg-gray-900 text-white shadow-lg sticky top-0 h-screen
@@ -261,10 +262,8 @@ export default function AdminLayout({ laporan, onDelete, onUpdateStatus }) {
           ${isDesktopSidebarOpen ? 'w-64' : 'w-20'}
         `}
       >
-        {/* Header Sidebar Desktop (Logo + Teks) */}
         <SidebarHeader isExpanded={isDesktopSidebarOpen} />
         
-        {/* Konten Sidebar Desktop */}
         <div className="overflow-y-auto overflow-x-hidden flex-1">
           <SidebarContent
             currentPage={currentPage}
@@ -277,7 +276,6 @@ export default function AdminLayout({ laporan, onDelete, onUpdateStatus }) {
         </div>
       </div>
 
-      {/* --- SIDEBAR (Mobile - Overlay) --- */}
       <div 
         className={`
           fixed top-0 left-0 z-50 w-64 h-full bg-gray-900 text-white shadow-lg 
@@ -286,10 +284,8 @@ export default function AdminLayout({ laporan, onDelete, onUpdateStatus }) {
           ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         `}
       >
-        {/* Header Sidebar Mobile (Logo + Teks + Tombol X) */}
         <SidebarHeader isExpanded={true} onCloseMobile={() => setIsMobileSidebarOpen(false)} />
         
-        {/* Konten Sidebar Mobile */}
         <div className="overflow-y-auto flex-1">
           <SidebarContent
             currentPage={currentPage}
@@ -299,12 +295,11 @@ export default function AdminLayout({ laporan, onDelete, onUpdateStatus }) {
               setIsLoggedIn(false);
               setIsMobileSidebarOpen(false);
             }}
-            isExpanded={true} // Selalu expanded di mobile
+            isExpanded={true} 
           />
         </div>
       </div>
 
-      {/* Overlay (untuk menggelapkan konten saat sidebar mobile terbuka) */}
       {isMobileSidebarOpen && (
         <div 
           className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
@@ -312,10 +307,8 @@ export default function AdminLayout({ laporan, onDelete, onUpdateStatus }) {
         ></div>
       )}
       
-      {/* --- KONTEN UTAMA --- */}
-      <div className="flex-1 flex flex-col max-w-full overflow-x-hidden">
+      <div className="flex-1 flex flex-col max-w-full overflow-x-hidden h-screen overflow-y-auto">
         
-        {/* Header Utama (Konten) */}
         <MainHeader
           onToggleMobileSidebar={() => setIsMobileSidebarOpen(true)}
           notifications={notifications}
@@ -323,15 +316,23 @@ export default function AdminLayout({ laporan, onDelete, onUpdateStatus }) {
           showNotification={showNotification}
         />
         
+        {/* --- PERBAIKAN: Teruskan props yang benar --- */}
         {showNotification && (
-          <NotificationPanel notifications={notifications} />
+          <NotificationPanel 
+            ref={notificationRef} 
+            notifications={notifications} 
+            onDeleteNotification={onDeleteNotification} // <-- Diperbaiki
+            onClearAll={onClearAllNotifications}      // <-- Diperbaiki
+          />
         )}
 
-        <main className="flex-1 container mx-auto px-4 py-8">
+        <main className="container mx-auto px-4 py-8">
           {renderCurrentPage()}
         </main>
         
-        <Footer /> 
+        <div className="mt-auto">
+          <Footer /> 
+        </div>
       </div>
     </div>
   );

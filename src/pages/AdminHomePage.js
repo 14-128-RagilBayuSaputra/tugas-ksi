@@ -28,7 +28,7 @@ export default function AdminHomePage({ laporan = [] }) {
             <h3 className="font-semibold text-gray-800 text-sm md:text-base">Laporan Menunggu</h3>
             <FileText className="text-orange-600" size={24} />
           </div>
-          <p className="text-2xl md:text-3xl font-bold text-gray-800">{totalPending}</p>
+          <p className="text-2xl font-bold text-gray-800">{totalPending}</p>
           <p className="text-xs md:text-sm text-gray-600 mt-1">Laporan perlu ditinjau</p>
         </div>
 
@@ -37,7 +37,7 @@ export default function AdminHomePage({ laporan = [] }) {
             <h3 className="font-semibold text-gray-800 text-sm md:text-base">Laporan Diproses</h3>
             <BarChart3 className="text-blue-600" size={24} />
           </div>
-          <p className="text-2xl md:text-3xl font-bold text-gray-800">{totalProses}</p>
+          <p className="text-2xl font-bold text-gray-800">{totalProses}</p>
           <p className="text-xs md:text-sm text-gray-600 mt-1">Laporan sedang dikerjakan</p>
         </div>
 
@@ -46,7 +46,7 @@ export default function AdminHomePage({ laporan = [] }) {
             <h3 className="font-semibold text-gray-800 text-sm md:text-base">Tingkat Respon</h3>
             <CheckCircle className="text-green-600" size={24} />
           </div>
-          <p className="text-2xl md:text-3xl font-bold text-gray-800">{tingkatRespon}%</p>
+          <p className="text-2xl font-bold text-gray-800">{tingkatRespon}%</p>
           <p className="text-xs md:text-sm text-gray-600 mt-1">Laporan terselesaikan</p>
         </div>
       </div>
