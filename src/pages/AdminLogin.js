@@ -5,19 +5,26 @@ import { LogIn } from 'lucide-react';
 export default function AdminLogin({ onLoginSuccess }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState(''); // State untuk error
 
   const handleLogin = () => {
     if (username === 'admin' && password === 'admin') {
+      // --- PERUBAHAN DI SINI ---
+      // 1. Simpan status login di localStorage
+      localStorage.setItem('isAdminLoggedIn', 'true');
+      
+      // 2. Panggil fungsi onLoginSuccess (dari AdminLayout)
       onLoginSuccess();
+      // -------------------------
     } else {
-      alert('Username atau Password Admin salah!');
+      setError('Username atau Password Admin salah!');
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-xl shadow-lg border border-gray-200 w-full max-w-md p-8">
-        {/* Logo Lampung Selatan */}
+        {/* ... (Logo dan Judul tidak berubah) ... */}
         <div className="text-center mb-8">
           <div className="w-20 h-20 mx-auto mb-4">
             <img 
@@ -52,6 +59,11 @@ export default function AdminLogin({ onLoginSuccess }) {
               placeholder="Masukkan password"
             />
           </div>
+
+          {/* --- TAMPILKAN ERROR JIKA ADA --- */}
+          {error && (
+            <p className="text-sm text-red-600 text-center">{error}</p>
+          )}
           
           <button 
             onClick={handleLogin}

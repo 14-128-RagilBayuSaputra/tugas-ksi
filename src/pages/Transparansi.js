@@ -1,18 +1,23 @@
 // src/pages/Transparansi.js
 import React from 'react';
-import { Download } from 'lucide-react';
+// --- PERUBAHAN: Tambahkan Paperclip ---
+import { Download, Paperclip } from 'lucide-react';
 import { kategoriOptions } from '../data/appData';
 
 export default function TransparansiPage({ laporan = [] }) {
-  // ... (kode pemrosesan data tidak berubah) ...
   const downloadReport = () => {
     alert('Laporan transparansi sedang diunduh...');
   };
+
+  // --- KEMBALIKAN LOGIKA STATISTIK AWAL ---
   const kategoriStats = {};
   const kategoriDasar = kategoriOptions.map(kat => kat.split(' ')[0]);
+  
   kategoriDasar.forEach(kat => {
-    kategoriStats[kat] = { total: 0, selesai: 0, proses: 0, pending: 0 };
+    // Tambahkan 'files: 0'
+    kategoriStats[kat] = { total: 0, selesai: 0, proses: 0, pending: 0, files: 0 };
   });
+
   laporan.forEach(item => {
     const katDasar = item.kategori.split(' ')[0];
     if (kategoriStats[katDasar]) {
@@ -24,12 +29,18 @@ export default function TransparansiPage({ laporan = [] }) {
       } else if (item.status === 'Pending') {
         kategoriStats[katDasar].pending++;
       }
+      // Hitung file
+      if (item.files && item.files.length > 0) {
+        kategoriStats[katDasar].files += item.files.length;
+      }
     }
   });
+
   const processedLaporanData = Object.keys(kategoriStats).map(kat => ({
     kategori: kat,
     ...kategoriStats[kat]
   }));
+  
   const totalLaporan = laporan.length;
   const totalSelesai = laporan.filter(l => l.status === 'Selesai').length;
   const totalProses = laporan.filter(l => l.status === 'Proses').length;
@@ -37,13 +48,13 @@ export default function TransparansiPage({ laporan = [] }) {
   const getPercentage = (count) => {
     return totalLaporan > 0 ? ((count / totalLaporan) * 100).toFixed(1) : 0;
   };
+  // --- AKHIR LOGIKA STATISTIK AWAL ---
 
   return (
     <div className="space-y-6">
       <div className="rounded-xl">
         
         <div className="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0">
-          {/* --- PERUBAHAN: Kecilkan font di HP --- */}
           <h2 className="text-base md:text-2xl font-bold text-gray-800 text-center md:text-left">Transparansi Laporan Warga</h2>
           <button 
             onClick={downloadReport}
@@ -54,10 +65,10 @@ export default function TransparansiPage({ laporan = [] }) {
           </button>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+        {/* --- KEMBALIKAN KARTU KATEGORI --- */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
           {processedLaporanData.map(item => (
             <div key={item.kategori} className="bg-white p-3 md:p-4 rounded-lg border border-gray-200 shadow-lg">
-              {/* --- PERUBAHAN: Kecilkan font di HP --- */}
               <h4 className="font-semibold text-gray-800 text-sm mb-2">{item.kategori}</h4>
               <p className="text-xl font-bold text-green-600">{item.total}</p>
               <div className="text-xs text-gray-600 mt-2 space-y-1">
@@ -73,15 +84,22 @@ export default function TransparansiPage({ laporan = [] }) {
                   <span>Pending:</span>
                   <span className="font-semibold text-orange-600">{item.pending}</span>
                 </div>
+                {/* Tampilkan jumlah file */}
+                {item.files > 0 && (
+                  <div className="flex justify-between text-blue-600">
+                    <span>Lampiran:</span>
+                    <span className="font-semibold">{item.files}</span>
+                  </div>
+                )}
               </div>
             </div>
           ))}
         </div>
 
+        {/* --- KEMBALIKAN GRAFIK STATUS LAPORAN --- */}
         <div className="bg-white p-4 md:p-6 rounded-lg shadow-lg border border-gray-200">
           <h3 className="font-bold text-gray-800 text-base md:text-lg mb-4">Grafik Status Laporan</h3>
           <div className="space-y-4">
-            {/* ... (kode grafik tidak berubah) ... */}
             {processedLaporanData.map(item => {
               if (item.total === 0) return null; 
 
@@ -137,12 +155,12 @@ export default function TransparansiPage({ laporan = [] }) {
         </div>
       </div>
 
+      {/* --- KEMBALIKAN STATISTIK BULANAN --- */}
       <div className="bg-white rounded-xl shadow-lg p-4 md:p-6">
         <h3 className="text-base md:text-xl font-bold text-gray-800 mb-4">Statistik Bulanan (Total: {totalLaporan})</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="text-center p-4 md:p-6 bg-green-50 rounded-lg shadow-md">
-            {/* --- PERUBAHAN: Kecilkan font di HP --- */}
             <p className="text-2xl md:text-3xl font-bold text-green-600 mb-2">{totalSelesai}</p>
             <p className="text-sm md:text-base text-gray-700 font-medium">Laporan Selesai</p>
             <p className="text-sm text-gray-500 mt-1">{getPercentage(totalSelesai)}% dari total</p>

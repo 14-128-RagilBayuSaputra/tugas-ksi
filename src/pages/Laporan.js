@@ -1,6 +1,6 @@
 // src/pages/Laporan.js
 import React, { useState } from 'react';
-import { Send, Camera, Video, Upload, X } from 'lucide-react';
+import { Send, Camera, Video, Upload, X, Loader, Paperclip } from 'lucide-react'; // Impor Paperclip
 import { kategoriOptions } from '../data/appData';
 
 export default function LaporanPage({ setCurrentPage, onAddLaporan }) {
@@ -12,45 +12,75 @@ export default function LaporanPage({ setCurrentPage, onAddLaporan }) {
     deskripsi: '',
     files: []
   });
+  
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({}); 
+
+  // --- PERBAIKAN: Simpan metadata file, bukan file object utuh ---
   const handleFileUpload = (e) => {
-    const files = Array.from(e.target.files);
-    setFormData({...formData, files: [...formData.files, ...files]});
+    const newFiles = Array.from(e.target.files).map(file => ({
+      name: file.name,
+      type: file.type,
+      size: file.size,
+    }));
+    setFormData({...formData, files: [...formData.files, ...newFiles]});
   };
+
+  // --- PERBAIKAN: Hapus file berdasarkan index ---
   const removeFile = (index) => {
     const newFiles = formData.files.filter((_, i) => i !== index);
     setFormData({...formData, files: newFiles});
   };
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevState => ({
       ...prevState,
       [name]: value
     }));
-  };
-  const handleSubmit = () => {
-    if (formData.kategori && formData.judul && formData.deskripsi && formData.nama) {
-      onAddLaporan(formData); 
-      setFormData({ 
-        nama: '', telepon: '', 
-        kategori: '', judul: '', deskripsi: '', files: [] 
-      });
-      setCurrentPage('laporan_sukses'); 
-    } else {
-      alert('Mohon lengkapi Nama, Kategori, Judul, dan Deskripsi!');
+    if (errors[name]) {
+      setErrors(prevErrors => ({ ...prevErrors, [name]: null }));
     }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.nama.trim()) newErrors.nama = 'Nama lengkap wajib diisi.';
+    if (!formData.kategori) newErrors.kategori = 'Kategori wajib dipilih.';
+    if (!formData.judul.trim()) newErrors.judul = 'Judul laporan wajib diisi.';
+    if (!formData.deskripsi.trim()) newErrors.deskripsi = 'Deskripsi lengkap wajib diisi.';
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = () => {
+    if (!validateForm()) {
+      return; 
+    }
+    setIsLoading(true);
+    
+    // Kirim formData (yang sekarang berisi metadata file)
+    onAddLaporan(formData); 
+    
+    // Reset form
+    setFormData({ 
+      nama: '', telepon: '', 
+      kategori: '', judul: '', deskripsi: '', files: [] 
+    });
+    setIsLoading(false);
+    setCurrentPage('laporan_sukses'); 
   };
 
   return (
     <div className="max-w-3xl mx-auto">
       <div className="bg-white rounded-xl shadow-xl p-4 md:p-8">
 
-        {/* --- PERUBAHAN: Kecilkan font di HP --- */}
         <h2 className="text-lg md:text-2xl font-bold text-gray-800 mb-6">Buat Laporan Baru</h2>
         
         <div className="space-y-6">
 
           <div className="border-b pb-6 border-gray-200">
-            {/* --- PERUBAHAN: Kecilkan font di HP --- */}
             <h3 className="text-base md:text-lg font-semibold text-gray-800 mb-4">Identitas Pelapor</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -63,9 +93,10 @@ export default function LaporanPage({ setCurrentPage, onAddLaporan }) {
                   name="nama"
                   value={formData.nama}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className={`w-full px-4 py-2.5 md:py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${errors.nama ? 'border-red-500' : 'border-gray-300'}`}
                   placeholder="Masukkan nama lengkap Anda"
                 />
+                {errors.nama && <p className="text-red-500 text-xs mt-1">{errors.nama}</p>}
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -94,13 +125,14 @@ export default function LaporanPage({ setCurrentPage, onAddLaporan }) {
               name="kategori"
               value={formData.kategori}
               onChange={handleChange}
-              className="w-full px-4 py-2.5 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className={`w-full px-4 py-2.5 md:py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${errors.kategori ? 'border-red-500' : 'border-gray-300'}`}
             >
               <option value="">Pilih Kategori</option>
               {kategoriOptions.map(kat => (
                 <option key={kat} value={kat}>{kat}</option>
               ))}
             </select>
+            {errors.kategori && <p className="text-red-500 text-xs mt-1">{errors.kategori}</p>}
           </div>
 
           <div>
@@ -112,9 +144,10 @@ export default function LaporanPage({ setCurrentPage, onAddLaporan }) {
               name="judul"
               value={formData.judul}
               onChange={handleChange}
-              className="w-full px-4 py-2.5 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className={`w-full px-4 py-2.5 md:py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${errors.judul ? 'border-red-500' : 'border-gray-300'}`}
               placeholder="Contoh: Jalan Rusak di RT 02"
             />
+            {errors.judul && <p className="text-red-500 text-xs mt-1">{errors.judul}</p>}
           </div>
 
           <div>
@@ -126,9 +159,10 @@ export default function LaporanPage({ setCurrentPage, onAddLaporan }) {
               value={formData.deskripsi}
               onChange={handleChange}
               rows="4"
-              className="w-full px-4 py-2.5 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className={`w-full px-4 py-2.5 md:py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${errors.deskripsi ? 'border-red-500' : 'border-gray-300'}`}
               placeholder="Jelaskan permasalahan secara detail..."
             ></textarea>
+            {errors.deskripsi && <p className="text-red-500 text-xs mt-1">{errors.deskripsi}</p>}
           </div>
 
           <div>
@@ -155,37 +189,47 @@ export default function LaporanPage({ setCurrentPage, onAddLaporan }) {
               </label>
             </div>
 
+            {/* --- PERBAIKAN: TAMBAHKAN BLOK PREVIEW FILE INI --- */}
             {formData.files.length > 0 && (
               <div className="mt-4 space-y-2">
+                <h4 className="text-sm font-semibold text-gray-700">File Terpilih:</h4>
                 {formData.files.map((file, index) => (
-                  <div key={index} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
-                    <div className="flex items-center space-x-3 min-w-0">
-                      {file.type.startsWith('image/') ? <Camera size={20} className="text-blue-500 flex-shrink-0" /> : <Video size={20} className="text-purple-500 flex-shrink-0" />}
+                  <div key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded-lg">
+                    <div className="flex items-center space-x-2 min-w-0">
+                      {file.type.startsWith('image/') ? <Camera size={18} className="text-blue-500 flex-shrink-0" /> : <Paperclip size={18} className="text-gray-500 flex-shrink-0" />}
                       <span className="text-sm text-gray-700 truncate">{file.name}</span>
                     </div>
                     <button 
-                      onClick={() => removeFile(index)}
-                      className="text-red-500 hover:text-red-700 flex-shrink-0"
+                      onClick={() => removeFile(index)} // Gunakan index
+                      className="text-red-500 hover:text-red-700 flex-shrink-0 p-1"
                     >
-                      <X size={20} />
+                      <X size={18} />
                     </button>
                   </div>
                 ))}
               </div>
             )}
+            {/* ----------------------------------------------- */}
+
           </div>
           
           <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
             <button 
               onClick={handleSubmit}
-              className="flex-1 bg-green-600 text-white py-2.5 md:py-3 rounded-lg hover:bg-green-700 transition-colors font-semibold flex items-center justify-center space-x-2"
+              disabled={isLoading}
+              className="flex-1 bg-green-600 text-white py-2.5 md:py-3 rounded-lg hover:bg-green-700 transition-colors font-semibold flex items-center justify-center space-x-2 disabled:bg-gray-400"
             >
-              <Send size={20} />
-              <span>Kirim Laporan</span>
+              {isLoading ? (
+                <Loader size={20} className="animate-spin" />
+              ) : (
+                <Send size={20} />
+              )}
+              <span>{isLoading ? 'Mengirim...' : 'Kirim Laporan'}</span>
             </button>
             <button 
               onClick={() => setCurrentPage('home')}
-              className="w-full sm:w-auto px-6 bg-gray-200 text-gray-700 py-2.5 md:py-3 rounded-lg hover:bg-gray-300 transition-colors font-semibold"
+              disabled={isLoading}
+              className="w-full sm:w-auto px-6 bg-gray-200 text-gray-700 py-2.5 md:py-3 rounded-lg hover:bg-gray-300 transition-colors font-semibold disabled:opacity-50"
             >
               Batal
             </button>

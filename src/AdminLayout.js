@@ -165,7 +165,6 @@ const SidebarContent = ({ currentPage, setCurrentPage, laporan, onLogout, isExpa
   );
 };
 
-// --- 3. KOMPONEN HEADER KONTEN ---
 const MainHeader = ({ onToggleMobileSidebar, notifications, setShowNotification, showNotification }) => (
   <header className="
     md:bg-white bg-gray-900 
@@ -178,7 +177,7 @@ const MainHeader = ({ onToggleMobileSidebar, notifications, setShowNotification,
     <div className="hidden md:block flex-1"></div>
     <div className="flex items-center space-x-2 md:space-x-4">
       <button 
-        onClick={() => setShowNotification(prev => !prev)} // Gunakan toggle
+        onClick={() => setShowNotification(prev => !prev)} 
         data-testid="notif-button"
         className="relative p-2 text-gray-300 md:text-gray-600 hover:bg-gray-700 md:hover:bg-gray-100 rounded-lg transition-colors"
       >
@@ -195,12 +194,15 @@ const MainHeader = ({ onToggleMobileSidebar, notifications, setShowNotification,
 
 
 // --- 4. LAYOUT UTAMA ADMIN ---
-// --- PERBAIKAN: Terima props notifikasi baru ---
+// --- PERUBAHAN: Hapus prop 'onSetTanggapan' ---
 export default function AdminLayout({ 
   laporan, onDelete, onUpdateStatus, 
   notifications, onDeleteNotification, onClearAllNotifications 
 }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    return localStorage.getItem('isAdminLoggedIn') === 'true';
+  });
+  
   const [currentPage, setCurrentPage] = useState('home');
   const [showNotification, setShowNotification] = useState(false);
   
@@ -225,8 +227,17 @@ export default function AdminLayout({
     };
   }, [showNotification]); 
 
+  const handleLogout = () => {
+    localStorage.removeItem('isAdminLoggedIn');
+    setIsLoggedIn(false);
+  };
+
+  const handleMobileLogout = () => {
+    handleLogout();
+    setIsMobileSidebarOpen(false);
+  };
+
   const renderCurrentPage = () => {
-    // ... (Tidak ada perubahan) ...
     switch (currentPage) {
       case 'home':
         return <AdminHomePage laporan={laporan} />;
@@ -235,6 +246,7 @@ export default function AdminLayout({
                   laporan={laporan} 
                   onDelete={onDelete} 
                   onUpdateStatus={onUpdateStatus} 
+                  // --- HAPUS prop 'onSetTanggapan' ---
                 />;
       case 'transparansi':
         return <TransparansiPage laporan={laporan} />;
@@ -269,7 +281,7 @@ export default function AdminLayout({
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
             laporan={laporan}
-            onLogout={() => setIsLoggedIn(false)}
+            onLogout={handleLogout}
             isExpanded={isDesktopSidebarOpen}
             onToggleDesktop={() => setIsDesktopSidebarOpen(!isDesktopSidebarOpen)}
           />
@@ -291,10 +303,7 @@ export default function AdminLayout({
             currentPage={currentPage}
             setCurrentPage={handleNavClick}
             laporan={laporan}
-            onLogout={() => {
-              setIsLoggedIn(false);
-              setIsMobileSidebarOpen(false);
-            }}
+            onLogout={handleMobileLogout}
             isExpanded={true} 
           />
         </div>
@@ -316,13 +325,12 @@ export default function AdminLayout({
           showNotification={showNotification}
         />
         
-        {/* --- PERBAIKAN: Teruskan props yang benar --- */}
         {showNotification && (
           <NotificationPanel 
             ref={notificationRef} 
             notifications={notifications} 
-            onDeleteNotification={onDeleteNotification} // <-- Diperbaiki
-            onClearAll={onClearAllNotifications}      // <-- Diperbaiki
+            onDeleteNotification={onDeleteNotification}
+            onClearAll={onClearAllNotifications}
           />
         )}
 
