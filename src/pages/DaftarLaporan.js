@@ -65,8 +65,6 @@ const LaporanDetailModal = ({ laporan, onClose }) => {
               <p className="text-xs text-gray-500 mt-2">*Tampilan file penuh memerlukan backend/database.</p>
             </div>
           )}
-
-          {/* --- AREA TANGGAPAN ADMIN DIHAPUS --- */}
           
         </div>
 
@@ -78,7 +76,6 @@ const LaporanDetailModal = ({ laporan, onClose }) => {
           >
             Tutup
           </button>
-          {/* --- TOMBOL SIMPAN TANGGAPAN DIHAPUS --- */}
         </div>
       </div>
     </div>
@@ -87,8 +84,8 @@ const LaporanDetailModal = ({ laporan, onClose }) => {
 
 
 // --- KOMPONEN UTAMA HALAMAN ---
-// --- PERUBAHAN: Hapus 'onSetTanggapan' dari props ---
-export default function DaftarLaporan({ laporan, onDelete, onUpdateStatus }) {
+// <-- UBAHAN: Terima prop onSetPriority
+export default function DaftarLaporan({ laporan, onDelete, onUpdateStatus, onSetPriority }) {
   
   const [filterKategori, setFilterKategori] = useState('Semua');
   const [selectedLaporan, setSelectedLaporan] = useState(null);
@@ -102,6 +99,19 @@ export default function DaftarLaporan({ laporan, onDelete, onUpdateStatus }) {
     }
     return { icon: <Clock size={16} className="text-orange-500" />, color: "text-orange-700", label: "Pending" };
   };
+
+  // <-- TAMBAHAN: Helper untuk style prioritas -->
+  const getPriorityInfo = (priority) => {
+    switch (priority) {
+      case 'Tinggi':
+        return 'bg-red-100 text-red-800';
+      case 'Sedang':
+        return 'bg-yellow-100 text-yellow-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+  // ------------------------------------------
 
   const kategoriFilterOptions = ['Semua', ...kategoriOptions.map(kat => kat.split(' ')[0])];
 
@@ -147,10 +157,17 @@ export default function DaftarLaporan({ laporan, onDelete, onUpdateStatus }) {
                 className="p-4" 
                 onClick={() => setSelectedLaporan(item)}
               >
-                <span className={`inline-flex items-center space-x-2 text-sm font-medium ${statusInfo.color} mb-2`}>
-                  {statusInfo.icon}
-                  <span>{statusInfo.label}</span>
-                </span>
+                {/* <-- UBAHAN: Tampilkan status dan prioritas --> */}
+                <div className="flex justify-between items-center mb-2">
+                  <span className={`inline-flex items-center space-x-2 text-sm font-medium ${statusInfo.color}`}>
+                    {statusInfo.icon}
+                    <span>{statusInfo.label}</span>
+                  </span>
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${getPriorityInfo(item.priority)}`}>
+                    Prioritas: {item.priority || 'Rendah'}
+                  </span>
+                </div>
+                {/* ------------------------------------------- */}
                 
                 <h3 className="text-base font-semibold text-gray-900">{item.judul}</h3>
                 <p className="text-xs text-gray-600 mb-2 truncate">{item.deskripsi}</p>
@@ -170,21 +187,39 @@ export default function DaftarLaporan({ laporan, onDelete, onUpdateStatus }) {
                 </div>
               </div>
               
-              <div className="flex items-center justify-end space-x-2 p-3 bg-gray-50 rounded-b-xl border-t">
-                {item.status === 'Pending' && (
-                  <button onClick={() => onUpdateStatus(item.id, 'Proses')} className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 text-xs font-semibold">
-                    Proses
+              {/* <-- UBAHAN: Tambahkan dropdown prioritas di kartu --> */}
+              <div className="flex items-center justify-between space-x-2 p-3 bg-gray-50 rounded-b-xl border-t">
+                <div className="flex-1">
+                  <label className="text-xs text-gray-500 font-medium">Ubah Prioritas:</label>
+                  <select
+                    value={item.priority || 'Rendah'}
+                    onChange={(e) => onSetPriority(item.id, e.target.value)}
+                    onClick={(e) => e.stopPropagation()} // Biar tidak buka modal
+                    className="text-xs p-1 border border-gray-300 rounded w-full mt-1 bg-white focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="Rendah">Rendah</option>
+                    <option value="Sedang">Sedang</option>
+                    <option value="Tinggi">Tinggi</option>
+                  </select>
+                </div>
+                
+                <div className="flex flex-col space-y-2"> {/* Tombol-tombol aksi */}
+                  {item.status === 'Pending' && (
+                    <button onClick={(e) => { e.stopPropagation(); onUpdateStatus(item.id, 'Proses'); }} className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 text-xs font-semibold">
+                      Proses
+                    </button>
+                  )}
+                  {item.status === 'Proses' && (
+                    <button onClick={(e) => { e.stopPropagation(); onUpdateStatus(item.id, 'Selesai'); }} className="px-3 py-1.5 bg-green-100 text-green-700 rounded-md hover:bg-green-200 text-xs font-semibold">
+                      Selesai
+                    </button>
+                  )}
+                  <button onClick={(e) => { e.stopPropagation(); onDelete(item.id); }} className="px-3 py-1.5 bg-red-100 text-red-700 rounded-md hover:bg-red-200 text-xs font-semibold">
+                    Hapus
                   </button>
-                )}
-                {item.status === 'Proses' && (
-                  <button onClick={() => onUpdateStatus(item.id, 'Selesai')} className="px-3 py-1.5 bg-green-100 text-green-700 rounded-md hover:bg-green-200 text-xs font-semibold">
-                    Selesai
-                  </button>
-                )}
-                <button onClick={() => onDelete(item.id)} className="px-3 py-1.5 bg-red-100 text-red-700 rounded-md hover:bg-red-200 text-xs font-semibold">
-                  Hapus
-                </button>
+                </div>
               </div>
+              {/* ---------------------------------------------------- */}
             </div>
           );
         })}
@@ -199,13 +234,14 @@ export default function DaftarLaporan({ laporan, onDelete, onUpdateStatus }) {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pelapor</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Laporan</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prioritas</th> {/* <-- TAMBAHAN: Kolom Prioritas */}
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {filteredLaporan.length === 0 && (
               <tr>
-                <td colSpan="5" className="px-6 py-12 text-center text-gray-500">
+                <td colSpan="6" className="px-6 py-12 text-center text-gray-500"> {/* <-- UBAHAN: colSpan jadi 6 */}
                   Tidak ada laporan untuk kategori "{filterKategori}".
                 </td>
               </tr>
@@ -251,8 +287,22 @@ export default function DaftarLaporan({ laporan, onDelete, onUpdateStatus }) {
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.kategori}</td>
+                  
+                  {/* <-- TAMBAHAN: Dropdown Prioritas di Tabel --> */}
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <select
+                      value={item.priority || 'Rendah'}
+                      onChange={(e) => onSetPriority(item.id, e.target.value)}
+                      className={`text-sm font-medium border-none rounded p-1 ${getPriorityInfo(item.priority)} focus:ring-blue-500 focus:border-blue-500`}
+                    >
+                      <option value="Rendah">Rendah</option>
+                      <option value="Sedang">Sedang</option>
+                      <option value="Tinggi">Tinggi</option>
+                    </select>
+                  </td>
+                  {/* ------------------------------------------ */}
+                  
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                    {/* --- PERUBAHAN: Ubah tombol jadi "Detail" --- */}
                     <button 
                       onClick={() => setSelectedLaporan(item)}
                       className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 text-xs font-semibold"
@@ -286,7 +336,6 @@ export default function DaftarLaporan({ laporan, onDelete, onUpdateStatus }) {
         <LaporanDetailModal 
           laporan={selectedLaporan}
           onClose={() => setSelectedLaporan(null)}
-          // --- HAPUS prop 'onSetTanggapan' ---
         />
       )}
     </div>

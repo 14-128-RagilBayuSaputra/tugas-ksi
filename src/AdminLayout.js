@@ -194,9 +194,8 @@ const MainHeader = ({ onToggleMobileSidebar, notifications, setShowNotification,
 
 
 // --- 4. LAYOUT UTAMA ADMIN ---
-// --- PERUBAHAN: Hapus prop 'onSetTanggapan' ---
 export default function AdminLayout({ 
-  laporan, onDelete, onUpdateStatus, 
+  laporan, onDelete, onUpdateStatus, onSetPriority, // <-- UBAHAN: Terima prop onSetPriority
   notifications, onDeleteNotification, onClearAllNotifications 
 }) {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
@@ -246,7 +245,7 @@ export default function AdminLayout({
                   laporan={laporan} 
                   onDelete={onDelete} 
                   onUpdateStatus={onUpdateStatus} 
-                  // --- HAPUS prop 'onSetTanggapan' ---
+                  onSetPriority={onSetPriority} // <-- UBAHAN: Teruskan prop
                 />;
       case 'transparansi':
         return <TransparansiPage laporan={laporan} />;

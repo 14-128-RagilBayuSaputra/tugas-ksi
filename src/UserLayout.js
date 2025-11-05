@@ -134,7 +134,6 @@ const MainHeader = ({ onToggleMobileSidebar, notifications, setShowNotification,
 );
 
 // --- 4. LAYOUT UTAMA PENGGUNA ---
-// --- PERBAIKAN: Terima props notifikasi baru ---
 export default function UserLayout({ 
   onAddLaporan, laporanPublik, 
   notifications, onDeleteNotification, onClearAllNotifications 
@@ -146,6 +145,13 @@ export default function UserLayout({
   const [isDesktopSidebarOpen, setIsDesktopSidebarOpen] = useState(true);
 
   const notificationRef = useRef(null);
+
+  // <-- TAMBAHAN: Filter notifikasi khusus untuk user di sini -->
+  // Kita hanya tampilkan notifikasi yang BUKAN "Laporan Baru Masuk"
+  const userNotifications = notifications.filter(
+    notif => notif.title !== 'Laporan Baru Masuk'
+  );
+  // -----------------------------------------------------------
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -243,18 +249,17 @@ export default function UserLayout({
         
         <MainHeader
           onToggleMobileSidebar={() => setIsMobileSidebarOpen(true)}
-          notifications={notifications}
+          notifications={userNotifications} // <-- UBAHAN: Gunakan notifikasi yang sudah difilter
           setShowNotification={setShowNotification}
           showNotification={showNotification}
         />
         
-        {/* --- PERBAIKAN: Teruskan props yang benar --- */}
         {showNotification && (
           <NotificationPanel 
             ref={notificationRef} 
-            notifications={notifications} 
-            onDeleteNotification={onDeleteNotification} // <-- Diperbaiki
-            onClearAll={onClearAllNotifications}      // <-- Diperbaiki
+            notifications={userNotifications} // <-- UBAHAN: Gunakan notifikasi yang sudah difilter
+            onDeleteNotification={onDeleteNotification}
+            onClearAll={onClearAllNotifications}      
           />
         )}
 

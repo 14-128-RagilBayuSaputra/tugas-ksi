@@ -1,20 +1,87 @@
 // src/pages/Transparansi.js
 import React from 'react';
-// --- PERUBAHAN: Tambahkan Paperclip ---
 import { Download, Paperclip } from 'lucide-react';
 import { kategoriOptions } from '../data/appData';
 
 export default function TransparansiPage({ laporan = [] }) {
+  
+  // <-- UBAHAN: Fungsi download disempurnakan untuk Excel -->
   const downloadReport = () => {
-    alert('Laporan transparansi sedang diunduh...');
-  };
+    const headers = [
+      'ID Laporan', 
+      'Nama Pelapor', 
+      'Telepon', 
+      'Kategori', 
+      'Judul', 
+      'Deskripsi', 
+      'Status', 
+      'Prioritas', 
+      'Jumlah Lampiran'
+    ];
 
-  // --- KEMBALIKAN LOGIKA STATISTIK AWAL ---
+    const escapeCSV = (str) => {
+      if (str === null || str === undefined) return '';
+      let result = String(str);
+      // Escape double quotes by doubling them
+      result = result.replace(/"/g, '""');
+      // Jika ada titik koma, baris baru, atau kutip, bungkus dengan kutip
+      // KITA GANTI DARI ',' (koma) KE ';' (titik koma)
+      if (result.search(/("|\;|\n)/g) >= 0) {
+        result = `"${result}"`;
+      }
+      return result;
+    };
+
+    // KITA GANTI PEMISAHNYA MENJADI ';' (titik koma)
+    const csvRows = [headers.join(';')]; 
+    
+    laporan.forEach(item => {
+      const row = [
+        item.id,
+        escapeCSV(item.nama),
+        escapeCSV(item.telepon),
+        escapeCSV(item.kategori),
+        escapeCSV(item.judul),
+        escapeCSV(item.deskripsi),
+        escapeCSV(item.status),
+        escapeCSV(item.priority || 'Rendah'),
+        item.files ? item.files.length : 0
+      ];
+      csvRows.push(row.join(';')); // <-- GANTI DI SINI
+    });
+
+    // TAMBAHKAN '\uFEFF' (BOM) DI AWAL UNTUK EXCEL
+    const csvContent = '\uFEFF' + csvRows.join('\n');
+
+    // Buat Blob dan picu download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      const tgl = new Date().toISOString().split('T')[0];
+      
+      link.setAttribute('href', url);
+      link.setAttribute('download', `laporan-transparansi-desa-${tgl}.csv`);
+      link.style.visibility = 'hidden';
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } else {
+      alert('Browser Anda tidak mendukung fitur download. Silakan coba di browser modern.');
+    }
+  };
+  // <-- BATAS PERUBAHAN FUNGSI DOWNLOAD -->
+
+
+  // --- (Sisa kode di bawah ini tidak ada perubahan) ---
+
   const kategoriStats = {};
   const kategoriDasar = kategoriOptions.map(kat => kat.split(' ')[0]);
   
   kategoriDasar.forEach(kat => {
-    // Tambahkan 'files: 0'
     kategoriStats[kat] = { total: 0, selesai: 0, proses: 0, pending: 0, files: 0 };
   });
 
@@ -29,7 +96,6 @@ export default function TransparansiPage({ laporan = [] }) {
       } else if (item.status === 'Pending') {
         kategoriStats[katDasar].pending++;
       }
-      // Hitung file
       if (item.files && item.files.length > 0) {
         kategoriStats[katDasar].files += item.files.length;
       }
@@ -48,7 +114,6 @@ export default function TransparansiPage({ laporan = [] }) {
   const getPercentage = (count) => {
     return totalLaporan > 0 ? ((count / totalLaporan) * 100).toFixed(1) : 0;
   };
-  // --- AKHIR LOGIKA STATISTIK AWAL ---
 
   return (
     <div className="space-y-6">
@@ -65,7 +130,6 @@ export default function TransparansiPage({ laporan = [] }) {
           </button>
         </div>
 
-        {/* --- KEMBALIKAN KARTU KATEGORI --- */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
           {processedLaporanData.map(item => (
             <div key={item.kategori} className="bg-white p-3 md:p-4 rounded-lg border border-gray-200 shadow-lg">
@@ -84,7 +148,6 @@ export default function TransparansiPage({ laporan = [] }) {
                   <span>Pending:</span>
                   <span className="font-semibold text-orange-600">{item.pending}</span>
                 </div>
-                {/* Tampilkan jumlah file */}
                 {item.files > 0 && (
                   <div className="flex justify-between text-blue-600">
                     <span>Lampiran:</span>
@@ -96,7 +159,6 @@ export default function TransparansiPage({ laporan = [] }) {
           ))}
         </div>
 
-        {/* --- KEMBALIKAN GRAFIK STATUS LAPORAN --- */}
         <div className="bg-white p-4 md:p-6 rounded-lg shadow-lg border border-gray-200">
           <h3 className="font-bold text-gray-800 text-base md:text-lg mb-4">Grafik Status Laporan</h3>
           <div className="space-y-4">
@@ -155,7 +217,6 @@ export default function TransparansiPage({ laporan = [] }) {
         </div>
       </div>
 
-      {/* --- KEMBALIKAN STATISTIK BULANAN --- */}
       <div className="bg-white rounded-xl shadow-lg p-4 md:p-6">
         <h3 className="text-base md:text-xl font-bold text-gray-800 mb-4">Statistik Bulanan (Total: {totalLaporan})</h3>
         

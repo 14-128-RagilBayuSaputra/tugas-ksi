@@ -14,8 +14,8 @@ const initialLaporan = [
     judul: 'Jalan Rusak di RT 02', 
     deskripsi: 'Jalannya berlubang dan bahaya', 
     status: 'Pending', 
-    files: []
-    // --- HAPUS 'tanggapan: ""' ---
+    files: [],
+    priority: 'Rendah' // <-- TAMBAHAN: Prioritas awal
   },
   { 
     id: 2, 
@@ -25,8 +25,8 @@ const initialLaporan = [
     judul: 'Sampah menumpuk', 
     deskripsi: 'Sampah di TPS liar', 
     status: 'Proses', 
-    files: []
-    // --- HAPUS 'tanggapan: "..."' ---
+    files: [],
+    priority: 'Sedang' // <-- TAMBAHAN: Prioritas awal
   },
 ];
 
@@ -57,8 +57,8 @@ export default function App() {
     const newLaporanWithId = { 
       ...laporanBaru, 
       id: Date.now(),
-      status: 'Pending'
-      // --- HAPUS 'tanggapan: ""' ---
+      status: 'Pending',
+      priority: 'Rendah' // <-- TAMBAHAN: Set prioritas default untuk laporan baru
     };
     setAllLaporan(prevLaporan => [newLaporanWithId, ...prevLaporan]);
     
@@ -101,7 +101,16 @@ export default function App() {
     }
   };
 
-  // --- FUNGSI 'handleSetTanggapan' DIHAPUS ---
+  // <-- TAMBAHAN: Fungsi untuk mengubah prioritas ---
+  const handleSetPriority = (laporanId, newPriority) => {
+    setAllLaporan(allLaporan.map(l => {
+      if (l.id === laporanId) {
+        return { ...l, priority: newPriority };
+      }
+      return l;
+    }));
+  };
+  // -----------------------------------------------
 
   const handleDeleteNotification = (notificationId) => {
     setNotifications(prevNotifs => 
@@ -123,7 +132,7 @@ export default function App() {
             laporan={allLaporan} 
             onDelete={handleDeleteLaporan}
             onUpdateStatus={handleUpdateStatus}
-            // --- HAPUS prop 'onSetTanggapan' ---
+            onSetPriority={handleSetPriority} // <-- UBAHAN: Teruskan prop
             notifications={notifications}
             onDeleteNotification={handleDeleteNotification}
             onClearAllNotifications={handleClearAllNotifications}
