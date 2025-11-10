@@ -1,18 +1,16 @@
 // src/UserLayout.js
 import React, { useState, useEffect, useRef } from 'react';
-import { Home, Send, BarChart3, Bell, Menu, X, Check, Loader, Clock } from 'lucide-react';
+import { Home, Send, BarChart3, Menu, X } from 'lucide-react';
 
 // Impor Komponen
 import Footer from './components/Footer';
-import NotificationPanel from './components/Notifikasi';
-
 // Impor Halaman
 import HomePage from './pages/HomePage';
 import LaporanPage from './pages/Laporan';
 import TransparansiPage from './pages/Transparansi';
 import LaporanSukses from './pages/LaporanSukses'; 
 
-// --- (SidebarHeader dan SidebarContent tidak berubah) ---
+// --- (SidebarHeader & SidebarContent tidak berubah) ---
 const SidebarHeader = ({ isExpanded = true, onCloseMobile }) => (
   <div className="flex items-center justify-between p-4 border-b border-gray-700 h-[81px]">
     <div className="flex items-center space-x-3 min-w-0">
@@ -36,7 +34,6 @@ const SidebarHeader = ({ isExpanded = true, onCloseMobile }) => (
     )}
   </div>
 );
-
 const SidebarContent = ({ currentPage, setCurrentPage, isExpanded, onToggleDesktop }) => {
   const navItems = [
     { id: 'home', label: 'Beranda', icon: Home },
@@ -82,7 +79,7 @@ const SidebarContent = ({ currentPage, setCurrentPage, isExpanded, onToggleDeskt
                 font-medium rounded-lg
                 transition-all duration-200 ease-in-out
                 ${isActive 
-                  ? 'bg-green-600 text-white shadow-lg' // Tema Pengguna (HIJAU)
+                  ? 'bg-green-600 text-white shadow-lg'
                   : 'bg-gray-800 text-gray-300 shadow-md hover:shadow-lg hover:bg-gray-700 hover:text-white'
                 }
                 ${!isExpanded ? 'justify-center' : ''}
@@ -105,74 +102,49 @@ const SidebarContent = ({ currentPage, setCurrentPage, isExpanded, onToggleDeskt
     </>
   );
 };
+// ----------------------------------------------------
 
-const MainHeader = ({ onToggleMobileSidebar, notifications, setShowNotification, showNotification }) => (
+
+// --- PERUBAHAN: Header dimodifikasi untuk center title di mobile ---
+const MainHeader = ({ onToggleMobileSidebar }) => (
   <header className="
     md:bg-white bg-gray-900 
-    shadow-sm z-10 p-4 flex justify-between items-center sticky top-0
+    shadow-sm z-10 p-4 flex items-center sticky top-0
+    md:justify-between relative 
   ">
-    <button onClick={onToggleMobileSidebar} className="p-2 -ml-2 text-gray-300 rounded-lg hover:bg-gray-700 md:hidden">
+    {/* Tombol Kiri (Absolute di mobile, tersembunyi di desktop) */}
+    <button 
+      onClick={onToggleMobileSidebar} 
+      className="p-2 text-gray-300 rounded-lg hover:bg-gray-700 
+                 md:hidden absolute left-2 top-1/2 -translate-y-1/2 z-10"
+    >
       <Menu size={24} />
     </button>
-    <h1 className="text-lg font-semibold text-white md:hidden">Kritik & Saran</h1>
+    
+    {/* Judul (Flex-1 dan center di mobile, tersembunyi di desktop) */}
+    <h1 className="text-lg font-semibold text-white md:hidden flex-1 text-center">
+      Kritik & Saran
+    </h1>
+    
+    {/* Spacer (Hanya tampil di desktop) */}
     <div className="hidden md:block flex-1"></div>
-    <div className="flex items-center space-x-2 md:space-x-4">
-      <button 
-        onClick={() => setShowNotification(prev => !prev)} // Gunakan toggle
-        data-testid="notif-button" 
-        className="relative p-2 text-gray-300 md:text-gray-600 hover:bg-gray-700 md:hover:bg-gray-100 rounded-lg transition-colors"
-      >
-        <Bell size={24} />
-        {notifications.length > 0 && (
-          <span className="absolute top-0 right-0 bg-red-500 text-xs rounded-full w-5 h-5 flex items-center justify-center text-white">
-            {notifications.length}
-          </span>
-        )}
-      </button>
-    </div>
   </header>
 );
+// ---------------------------------------------------------------
 
-// --- 4. LAYOUT UTAMA PENGGUNA ---
+
+// --- (Layout Utama tidak berubah) ---
 export default function UserLayout({ 
-  onAddLaporan, laporanPublik, 
-  notifications, onDeleteNotification, onClearAllNotifications 
+  onAddLaporan, laporanPublik, allPengumuman
 }) {
   const [currentPage, setCurrentPage] = useState('home');
-  const [showNotification, setShowNotification] = useState(false);
-  
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isDesktopSidebarOpen, setIsDesktopSidebarOpen] = useState(true);
-
-  const notificationRef = useRef(null);
-
-  // <-- TAMBAHAN: Filter notifikasi khusus untuk user di sini -->
-  // Kita hanya tampilkan notifikasi yang BUKAN "Laporan Baru Masuk"
-  const userNotifications = notifications.filter(
-    notif => notif.title !== 'Laporan Baru Masuk'
-  );
-  // -----------------------------------------------------------
-
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
-        if (!event.target.closest('[data-testid="notif-button"]')) {
-          setShowNotification(false);
-        }
-      }
-    }
-    if (showNotification) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showNotification]); 
 
   const renderCurrentPage = () => {
     switch (currentPage) {
       case 'home':
-        return <HomePage laporan={laporanPublik} />;
+        return <HomePage laporan={laporanPublik} pengumuman={allPengumuman} />;
       case 'laporan':
         return <LaporanPage setCurrentPage={setCurrentPage} onAddLaporan={onAddLaporan} />;
       case 'transparansi':
@@ -180,7 +152,7 @@ export default function UserLayout({
       case 'laporan_sukses':
         return <LaporanSukses setCurrentPage={setCurrentPage} />;
       default:
-        return <HomePage laporan={laporanPublik} />;
+        return <HomePage laporan={laporanPublik} pengumuman={allPengumuman} />;
     }
   };
 
@@ -249,20 +221,8 @@ export default function UserLayout({
         
         <MainHeader
           onToggleMobileSidebar={() => setIsMobileSidebarOpen(true)}
-          notifications={userNotifications} // <-- UBAHAN: Gunakan notifikasi yang sudah difilter
-          setShowNotification={setShowNotification}
-          showNotification={showNotification}
         />
         
-        {showNotification && (
-          <NotificationPanel 
-            ref={notificationRef} 
-            notifications={userNotifications} // <-- UBAHAN: Gunakan notifikasi yang sudah difilter
-            onDeleteNotification={onDeleteNotification}
-            onClearAll={onClearAllNotifications}      
-          />
-        )}
-
         <main className="container mx-auto px-4 py-8">
           {renderCurrentPage()}
         </main>

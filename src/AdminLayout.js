@@ -1,6 +1,6 @@
 // src/AdminLayout.js
 import React, { useState, useEffect, useRef } from 'react';
-import { Home, FileText, BarChart3, LogOut, Bell, Check, Loader, Clock, Menu, X } from 'lucide-react';
+import { Home, FileText, BarChart3, LogOut, Bell, Check, Loader, Clock, Menu, X, Megaphone } from 'lucide-react';
 import Footer from './components/Footer';
 import NotificationPanel from './components/Notifikasi';
 
@@ -9,9 +9,10 @@ import AdminLogin from './pages/AdminLogin';
 import AdminHomePage from './pages/AdminHomePage';
 import TransparansiPage from './pages/Transparansi';
 import DaftarLaporan from './pages/DaftarLaporan';
+import AdminPengumuman from './pages/adminpengumuman';
 
 
-// --- (SidebarHeader dan SidebarContent tidak berubah) ---
+// --- (SidebarHeader tidak berubah) ---
 const SidebarHeader = ({ isExpanded = true, onCloseMobile }) => (
   <div className="flex items-center justify-between p-4 border-b border-gray-700 h-[81px]">
     <div className="flex items-center space-x-3 min-w-0">
@@ -36,10 +37,12 @@ const SidebarHeader = ({ isExpanded = true, onCloseMobile }) => (
   </div>
 );
 
+// --- (SidebarContent tidak berubah) ---
 const SidebarContent = ({ currentPage, setCurrentPage, laporan, onLogout, isExpanded, onToggleDesktop }) => {
   const navItems = [
     { id: 'home', label: 'Beranda', icon: Home },
     { id: 'daftar_laporan', label: 'Daftar Laporan', icon: FileText },
+    { id: 'pengumuman', label: 'Pengumuman', icon: Megaphone },
     { id: 'transparansi', label: 'Transparansi', icon: BarChart3 }
   ];
 
@@ -165,6 +168,7 @@ const SidebarContent = ({ currentPage, setCurrentPage, laporan, onLogout, isExpa
   );
 };
 
+// --- (MainHeader tidak berubah) ---
 const MainHeader = ({ onToggleMobileSidebar, notifications, setShowNotification, showNotification }) => (
   <header className="
     md:bg-white bg-gray-900 
@@ -195,8 +199,11 @@ const MainHeader = ({ onToggleMobileSidebar, notifications, setShowNotification,
 
 // --- 4. LAYOUT UTAMA ADMIN ---
 export default function AdminLayout({ 
-  laporan, onDelete, onUpdateStatus, onSetPriority, // <-- UBAHAN: Terima prop onSetPriority
-  notifications, onDeleteNotification, onClearAllNotifications 
+  laporan, onDelete, onUpdateStatus, onSetPriority, 
+  notifications, onDeleteNotification, onClearAllNotifications,
+  // --- TAMBAHAN: Terima prop edit ---
+  allPengumuman, onAddPengumuman, onDeletePengumuman, onEditPengumuman
+  // ---------------------------------
 }) {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     return localStorage.getItem('isAdminLoggedIn') === 'true';
@@ -245,8 +252,17 @@ export default function AdminLayout({
                   laporan={laporan} 
                   onDelete={onDelete} 
                   onUpdateStatus={onUpdateStatus} 
-                  onSetPriority={onSetPriority} // <-- UBAHAN: Teruskan prop
+                  onSetPriority={onSetPriority}
                 />;
+      case 'pengumuman':
+        // --- PERUBAHAN: Teruskan prop onEditPengumuman ---
+        return <AdminPengumuman
+                  allPengumuman={allPengumuman}
+                  onAddPengumuman={onAddPengumuman}
+                  onDeletePengumuman={onDeletePengumuman}
+                  onEditPengumuman={onEditPengumuman} 
+                />;
+      // ------------------------------------------------
       case 'transparansi':
         return <TransparansiPage laporan={laporan} />;
       default:
@@ -262,7 +278,7 @@ export default function AdminLayout({
     setCurrentPage(page);
     setIsMobileSidebarOpen(false); 
   };
-
+  
   return (
     <div className="flex min-h-screen bg-gray-100">
       
