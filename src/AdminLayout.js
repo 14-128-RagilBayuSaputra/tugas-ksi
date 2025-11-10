@@ -10,6 +10,7 @@ import AdminHomePage from './pages/AdminHomePage';
 import TransparansiPage from './pages/Transparansi';
 import DaftarLaporan from './pages/DaftarLaporan';
 import AdminPengumuman from './pages/adminpengumuman';
+import PengumumanSukses from './pages/PengumumanSukses';
 
 
 // --- (SidebarHeader tidak berubah) ---
@@ -260,9 +261,12 @@ export default function AdminLayout({
                   allPengumuman={allPengumuman}
                   onAddPengumuman={onAddPengumuman}
                   onDeletePengumuman={onDeletePengumuman}
-                  onEditPengumuman={onEditPengumuman} 
+                  onEditPengumuman={onEditPengumuman}
+                  setCurrentPage={setCurrentPage} 
                 />;
       // ------------------------------------------------
+      case 'pengumuman_sukses':
+        return <PengumumanSukses  setCurrentPage={setCurrentPage} />;
       case 'transparansi':
         return <TransparansiPage laporan={laporan} />;
       default:

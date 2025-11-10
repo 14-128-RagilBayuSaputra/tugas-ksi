@@ -1,5 +1,5 @@
 // src/pages/AdminPengumuman.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Send, Loader, Image as ImageIcon, Trash2, Calendar, Upload, X, Edit2 } from 'lucide-react';
 
 const emptyForm = {
@@ -11,7 +11,7 @@ const emptyForm = {
 /**
  * Komponen Form/Editor yang bisa dipakai untuk 'Buat' dan 'Edit'
  */
-const PengumumanEditor = ({ onSave, initialData, onCancel }) => {
+const PengumumanEditor = ({ onSave, initialData, onCancel, setCurrentPage }) => {
   const [formData, setFormData] = useState(emptyForm);
   const [isLoading, setIsLoading] = useState(false);
   const [isReadingFiles, setIsReadingFiles] = useState(false);
@@ -97,7 +97,15 @@ const PengumumanEditor = ({ onSave, initialData, onCancel }) => {
         setFormData(emptyForm); // Reset form hanya jika mode 'Buat'
       }
       setIsLoading(false);
-      alert(isEditMode ? 'Pengumuman berhasil diperbarui!' : 'Pengumuman berhasil dipublikasikan!');
+      
+      // --- PERUBAHAN: Ganti alert() dengan navigasi ke halaman sukses ---
+      if (setCurrentPage) {
+        setCurrentPage('pengumuman_sukses');
+      } else {
+        // Fallback jika setCurrentPage tidak ter-pass
+        alert(isEditMode ? 'Pengumuman berhasil diperbarui!' : 'Pengumuman berhasil dipublikasikan!');
+      }
+      // -----------------------------------------------------------------
     }, 500); 
   };
 
@@ -173,7 +181,6 @@ const PengumumanEditor = ({ onSave, initialData, onCancel }) => {
                   <div className="flex items-center space-x-2 min-w-0">
                     <img src={imageUrl} alt="Preview" className="w-10 h-10 object-cover rounded shadow-sm" />
                     <span className="text-sm text-gray-700 truncate">
-                      {/* Bedakan gambar lama (URL) dan baru (Base64) */}
                       {imageUrl.startsWith('data:') ? `Gambar ${index + 1} (Baru)` : `Gambar ${index + 1}`}
                     </span>
                   </div>
@@ -186,6 +193,13 @@ const PengumumanEditor = ({ onSave, initialData, onCancel }) => {
                   </button>
                 </div>
               ))}
+              {/* --- TAMBAHAN PERINGATAN DEMO --- */}
+              <p className="text-xs text-orange-600 bg-orange-50 p-3 rounded-lg mt-2">
+                <strong>Peringatan Demo:</strong> Gambar disimpan sementara di browser (localStorage).
+                Jika total ukuran file terlalu besar (di atas 4-5MB),
+                penyimpanan mungkin gagal.
+              </p>
+              {/* ------------------------------------- */}
             </div>
           )}
         </div>
@@ -215,7 +229,6 @@ const PengumumanEditor = ({ onSave, initialData, onCancel }) => {
           ) : (
             <Send size={20} />
           )}
-          {/* Ganti teks tombol berdasarkan mode */}
           <span>{isEditMode ? 'Simpan Perubahan' : 'Publikasikan'}</span>
         </button>
       </form>
@@ -226,11 +239,13 @@ const PengumumanEditor = ({ onSave, initialData, onCancel }) => {
 /**
  * Komponen Halaman Utama yang menggabungkan Form dan Daftar
  */
-export default function AdminPengumuman({ allPengumuman, onAddPengumuman, onDeletePengumuman, onEditPengumuman }) {
+export default function AdminPengumuman({ allPengumuman, onAddPengumuman, onDeletePengumuman, onEditPengumuman, setCurrentPage }) {
   
-  // --- TAMBAHAN: State untuk melacak pengumuman mana yang sedang diedit ---
   const [editingPengumuman, setEditingPengumuman] = useState(null);
-  // ------------------------------------------------------------------
+  
+  // --- PERUBAHAN: Buat ref untuk form editor ---
+  const editorRef = useRef(null);
+  // ---------------------------------------------
 
   const formatTanggal = (isoString) => {
     return new Date(isoString).toLocaleDateString('id-ID', {
@@ -240,7 +255,6 @@ export default function AdminPengumuman({ allPengumuman, onAddPengumuman, onDele
     });
   };
 
-  // --- TAMBAHAN: Fungsi wrapper untuk menangani 'Create' atau 'Update' ---
   const handleSave = (data) => {
     if (editingPengumuman) {
       // Ini adalah mode EDIT
@@ -255,22 +269,32 @@ export default function AdminPengumuman({ allPengumuman, onAddPengumuman, onDele
   const handleCancelEdit = () => {
     setEditingPengumuman(null); // Set kembali ke null untuk batal
   };
-  // -----------------------------------------------------------------
+  
+  // --- PERUBAHAN: Buat fungsi untuk handle klik "Edit" ---
+  const handleEditClick = (pengumuman) => {
+    setEditingPengumuman(pengumuman);
+    // Cek jika ref sudah terpasang
+    if (editorRef.current) {
+      // Perintahkan browser untuk scroll ke elemen ref (form editor)
+      editorRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+  // -----------------------------------------------------
 
   return (
     <div className="space-y-8">
-      {/* --- PERUBAHAN: Form sekarang dinamis ---
-        Dia akan menampilkan form 'Edit' jika editingPengumuman ada isinya,
-        atau form 'Buat' jika isinya null.
-        Key sangat penting di sini agar React me-reset state form
-      */}
-      <PengumumanEditor 
-        key={editingPengumuman ? editingPengumuman.id : 'new'} 
-        onSave={handleSave}
-        initialData={editingPengumuman}
-        onCancel={handleCancelEdit}
-      />
-      {/* -------------------------------------- */}
+      
+      {/* --- PERUBAHAN: Bungkus editor dengan div + ref --- */}
+      <div ref={editorRef}>
+        <PengumumanEditor 
+          key={editingPengumuman ? editingPengumuman.id : 'new'} 
+          onSave={handleSave}
+          initialData={editingPengumuman}
+          onCancel={handleCancelEdit}
+          setCurrentPage={setCurrentPage} // Teruskan prop navigasi
+        />
+      </div>
+      {/* ------------------------------------------------ */}
 
 
       {/* Bagian Daftar Pengumuman Terbit */}
@@ -309,10 +333,11 @@ export default function AdminPengumuman({ allPengumuman, onAddPengumuman, onDele
                     <span>{formatTanggal(pengumuman.tanggal)}</span>
                   </span>
                   
-                  {/* --- TAMBAHAN: Tombol Edit & Hapus --- */}
                   <div className="flex space-x-2">
                     <button 
-                      onClick={() => setEditingPengumuman(pengumuman)} // <-- Set state untuk edit
+                      // --- PERUBAHAN: Gunakan fungsi handleEditClick ---
+                      onClick={() => handleEditClick(pengumuman)} 
+                      // --------------------------------------------------
                       className="px-3 py-1.5 bg-yellow-100 text-yellow-800 rounded-md hover:bg-yellow-200 text-xs font-semibold flex items-center space-x-1"
                     >
                       <Edit2 size={14} />
@@ -326,7 +351,6 @@ export default function AdminPengumuman({ allPengumuman, onAddPengumuman, onDele
                       <span>Hapus</span>
                     </button>
                   </div>
-                  {/* ------------------------------------- */}
                 </div>
 
               </div>

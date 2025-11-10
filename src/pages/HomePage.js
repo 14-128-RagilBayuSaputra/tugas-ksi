@@ -168,25 +168,25 @@ const PengumumanSection = ({ pengumuman = [], onSelectPengumuman, formatTanggal 
         <div className="space-y-6">
           {pengumumanTerbaru.map(item => (
             // --- PERUBAHAN: Tambah onClick untuk membuka modal ---
-            <div 
+           <div 
               key={item.id} 
-              className="border-b border-gray-100 pb-6 last:border-b-0 last:pb-0 cursor-pointer hover:bg-gray-50 -m-4 p-4 rounded-lg transition-colors"
+              className="bg-white border border-gray-200 rounded-xl p-4 md:p-6 shadow-md hover:shadow-lg cursor-pointer transition-all duration-200"
               onClick={() => onSelectPengumuman(item)}
             >
-              
-              {/* --- PERBAIKAN: Gunakan 'object-contain' agar gambar tidak terpotong --- */}
-              {item.imageUrls && item.imageUrls.length > 0 ? (
-                <img 
-                  src={item.imageUrls[0]} 
-                  alt={item.judul} 
-                  className="w-full h-auto max-h-72 object-contain rounded-lg mb-3 bg-gray-100" 
-                />
-              ) : (
-                 <div className="w-full h-32 object-cover rounded-lg mb-3 bg-gray-100 flex items-center justify-center text-gray-400">
-                    <ImageIcon size={40} />
-                 </div>
-              )}
-              {/* ----------------------------------------------------------------- */}
+            {/* -------------------------------------- */}
+
+              {/* Konten di dalamnya (gambar, judul, dll) tetap sama */}
+              <div className="w-full aspect-video rounded-lg mb-3 bg-gray-100 flex items-center justify-center overflow-hidden">
+                {item.imageUrls && item.imageUrls.length > 0 ? (
+                  <img 
+                    src={item.imageUrls[0]} 
+                    alt={item.judul} 
+                    className="w-full h-full object-contain" 
+                  />
+                ) : (
+                   <ImageIcon size={40} className="text-gray-400" />
+                )}
+              </div>
               
               <h4 className="text-base md:text-lg font-semibold text-gray-900 mb-1">{item.judul}</h4>
               <span className="flex items-center space-x-1 text-xs text-gray-500 mb-2">
@@ -194,11 +194,9 @@ const PengumumanSection = ({ pengumuman = [], onSelectPengumuman, formatTanggal 
                 <span>Dipublikasikan pada {formatTanggal(item.tanggal)}</span>
               </span>
               
-              {/* --- PERUBAHAN: Tampilkan ringkasan (line-clamp-3) --- */}
               <p className="text-sm text-gray-700 whitespace-pre-wrap line-clamp-3">
                 {item.isi}
               </p>
-              {/* --------------------------------------------------- */}
             </div>
           ))}
         </div>
